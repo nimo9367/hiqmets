@@ -95,7 +95,7 @@ export default class RegisterActivity extends Vue {
             minutes: this.minutes,
             kcal: (userData.selectedActivity.mets * (userData.user.weight ? userData.user.weight : 82) * (<number>mins  / 60)).toFixed(0),
             aid: userData.selectedActivity.id,
-            cid: userData.challange.id,
+            cid: userData.challenge.id,
             uid: userData.user.uid,
             created: this.$data.datetime,
         }, { merge: true }).then(() => {

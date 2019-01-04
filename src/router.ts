@@ -6,7 +6,7 @@ import Login from './views/Login.vue';
 import SignUp from './views/SignUp.vue';
 import ActivityList from './views/ActivityList.vue';
 import Profile from './views/Profile.vue';
-import Challanges from './views/Challanges.vue';
+import Challenges from './views/Challenges.vue';
 
 Vue.use(Router);
 
@@ -50,9 +50,9 @@ const router = new Router({
       },
     },
     {
-      path: '/challanges/',
-      name: 'Challanges',
-      component: Challanges,
+      path: '/challenges/',
+      name: 'Challenges',
+      component: Challenges,
       meta: {
         requiresAuth: true,
       },

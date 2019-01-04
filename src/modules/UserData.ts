@@ -1,6 +1,6 @@
 import { db, countdown } from '../main';
 import User from './User';
-import Challange from '../entities/Challange';
+import Challenge from '../entities/Challenge';
 
 class UserData {
     public isLoggedIn: boolean = false;
@@ -16,14 +16,14 @@ class UserData {
         text: '',
     };
     
-    public challange: Challange = new Challange();
+    public challenge: Challenge = new Challenge();
 
-    loadChallanges() {
-        return db.collection('challanges').get().then((snapshot: any) => {
-            const cs: Challange[] = [];
+    loadChallenges() {
+        return db.collection('challenges').get().then((snapshot: any) => {
+            const cs: Challenge[] = [];
             snapshot.docs.forEach((doc:any) => {
                 const data = doc.data();
-                let c = new Challange();
+                let c = new Challenge();
                 c.id = doc.id;
                 c.name = data.name;
                 c.description = data.description;
@@ -43,27 +43,27 @@ class UserData {
                 this.user.id = x.id;
             });
             
-            if(!this.user.default_challange){
+            if(!this.user.default_challenge){
                 this.isLoading = false;
-                db.collection('challanges').orderBy('created').get().then(snapshot => {
+                db.collection('challenges').orderBy('created').get().then(snapshot => {
                     if(!snapshot.size)
                         return;
-                    this.user.default_challange = snapshot.docs[0].id;
-                    console.log("Default challange missing. Setting default to: " + snapshot.docs[0].id);
+                    this.user.default_challenge = snapshot.docs[0].id;
+                    console.log("Default challenge missing. Setting default to: " + snapshot.docs[0].id);
                     this.saveUser().then(() => this.loadUser(uid));
                     return;
                 });
             }
             else {
-                db.collection('challanges').doc(this.user.default_challange).get().then((doc: any) => {
+                db.collection('challenges').doc(this.user.default_challenge).get().then((doc: any) => {
                     const data = doc.data();
-                    this.challange.id = doc.id;
-                    this.challange.name = data.name;
-                    this.challange.description = data.description;
+                    this.challenge.id = doc.id;
+                    this.challenge.name = data.name;
+                    this.challenge.description = data.description;
                     this.isLoading = false;
-                    this.challange.startdate = new Date(data.startdate.seconds*1000);
-                    this.challange.enddate = new Date(data.enddate.seconds*1000);
-                    this.challange.countDown();
+                    this.challenge.startdate = new Date(data.startdate.seconds*1000);
+                    this.challenge.enddate = new Date(data.enddate.seconds*1000);
+                    this.challenge.countDown();
                     this.loadStats();
                 });
             }
@@ -81,7 +81,7 @@ class UserData {
         const self = this;
         self.entriesData.entries = [];
         db.collection('users').doc(userId).get().then(user => {
-            const cid = this.user.default_challange;
+            const cid = this.user.default_challenge;
             const u = user.data();
             if(!cid || !u)
              return;
@@ -91,8 +91,8 @@ class UserData {
             .where('uid', '==', u.uid)
             .where('cid', '==', cid)
             .orderBy("created", "desc")
-            .where('created', '>=', this.challange.startdate)
-            .where('created', '<=', this.challange.enddate)
+            .where('created', '>=', this.challenge.startdate)
+            .where('created', '<=', this.challenge.enddate)
             .limit(100)
             .onSnapshot((entries: any) => {
                 this.entriesData.totalMinutes = 0;
@@ -137,15 +137,15 @@ class UserData {
         let stats: any[] = [];
         users.docs.forEach(user => {
           const u = user.data();
-          const cid = this.user.default_challange;
+          const cid = this.user.default_challenge;
           if(!cid || !u)
             return;
           return db.collection('entries')
             .where('uid', '==', u.uid)
             .where('cid', '==', cid)
             .orderBy("created", "desc")
-            .where('created', '>=', this.challange.startdate)
-            .where('created', '<=', this.challange.enddate)
+            .where('created', '>=', this.challenge.startdate)
+            .where('created', '<=', this.challenge.enddate)
             .onSnapshot((entries: any) => {
                 const userObj = {
                   uid: user.id,

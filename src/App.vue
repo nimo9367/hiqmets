@@ -4,7 +4,7 @@
         href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" 
         integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" 
         crossorigin="anonymous">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar" role="navigation" aria-label="main navigation" style = "border-radius: 0em">
       <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item">
@@ -28,7 +28,7 @@
             <router-link :to="{ name: 'ActivityList', params: {userId: userData.user.id } }">Min aktivitet</router-link>
           </a>
           <a class="navbar-item">
-            <router-link to="/challanges">Utmaningar</router-link>
+            <router-link to="/challenges">Utmaningar</router-link>
           </a>
           <a class="navbar-item">
             <router-link to="/profile">Profil</router-link>
@@ -56,7 +56,7 @@
     <footer class="footer">
       <div class="content has-text-centered">
         <p>
-          <strong>Workout Challange </strong> v0.01
+          <strong>Workout Challenge </strong> v0.01
         </p>
       </div>
     </footer>

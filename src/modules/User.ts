@@ -7,7 +7,7 @@ class User {
     public weight: number = 0;
     public sex: string = '';
     public favoriteActivity: string = '';
-    public default_challange: string = '';
+    public default_challenge: string = '';
 }
 
 export default User;

@@ -1,7 +1,7 @@
 
 <template>
     <div>
-        <div class="hero">
+        <div class="hero is-light">
             <div class="hero-body">
                 <div class="container">
                 <h1 class="title">
@@ -26,25 +26,8 @@
                             <b-input v-model="email" type="email" placeholder="kalle.kula@hiq.se" ></b-input>
                         </b-field>
                         <b-field label="Lösenord">
-                            <b-input v-model="password" type="password">
+                            <b-input v-model="password" type="password" minlength="6">
                             </b-input>
-                        </b-field>
-                        <div class="content">
-                            <p>Nedan följer information vilken endast används för att ge en bättre beräknad kaloriförbrukning. Bryr du dig inte om det kan du skita i det.</p>
-                        </div>
-                        <b-field
-                            label="Kön">
-                            <b-select v-model="sex" placeholder="Välj" expanded>
-                                <option value="rest">Övriga</option>
-                                <option value="man">Man</option>
-                                <option value="woman">Kvinna</option>
-                            </b-select>
-                        </b-field>
-                        <b-field label="Vikt (kg)">
-                            <b-input v-model="weight"
-                                type="number"
-                                min="30"
-                                max="250"></b-input>
                         </b-field>
                         <div class="field">
                             <input type="submit" class="button is-primary input" value="Skapa"/>
@@ -67,9 +50,7 @@
             return {
                 email: '',
                 password: '',
-                username: '',
-                sex: '',
-                weight: ''
+                username: ''
             };
         },
         methods: {
@@ -79,9 +60,7 @@
                         const newUser = {
                             uid: user.user.uid,
                             name: this.$data.username,
-                            email: this.$data.email,
-                            sex: this.$data.sex,
-                            weight: this.$data.weight,
+                            email: this.$data.email
                         };
                         db.collection('users').add(newUser).then(() => router.push({ name: 'home'}));
                     },

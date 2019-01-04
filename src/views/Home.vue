@@ -2,12 +2,12 @@
   <div>
     <div class="hero is-light">
       <div class="hero-body">
-        <div v-if="challange" class="container">
+        <div v-if="challenge" class="container">
           <h1 class="title">
-            {{ challange.name }}
+            {{ challenge.name }}
           </h1>
           <h2 class="subtitle">
-            {{ challange.countDownStr }}
+            {{ challenge.countDownStr }}
           </h2>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default class Home extends Vue {
   data() {
     return {
       name: userData.user.name,
-      challange: userData.challange,
+      challenge: userData.challenge,
       userData: userData
     };
   }
@@ -187,7 +187,7 @@ export default class Home extends Vue {
     userData.loadStats({activities: value.map((x:any) => x.id)});
   }
 
-  @Watch('userData.challange')
+  @Watch('userData.challenge')
   callangeChange() {
     userData.loadStats();
   }

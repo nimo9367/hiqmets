@@ -2,7 +2,7 @@
   <div>
     <div class="hero is-light">
       <div class="hero-body">
-        <div v-if="challange" class="container">
+        <div v-if="challenge" class="container">
            <div class="media">
             <div class="media-left">
               <figure class="image is-64x64">
@@ -14,7 +14,7 @@
                 <span>{{ this.userData.entriesData.loadedUsersName }}</span>
               </h1>
               <h2 class="subtitle">
-                {{ challange.name }} 
+                {{ challenge.name }} 
               </h2>
             </div>
           </div>
@@ -98,7 +98,7 @@ export default class ActivityList extends Vue {
   data() {
     return {
       name: userData.user.name,
-      challange: userData.challange,
+      challenge: userData.challenge,
       userData: userData,
       userId: this.$route.params.userId,
       props: ['userId']

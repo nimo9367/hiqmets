@@ -15,7 +15,7 @@
     <div class="container">
         <section class="section">
             <div class="columns">
-                <div v-for="c in challanges" v-bind:key="c.id" class="column is-one-third">
+                <div v-for="c in challenges" v-bind:key="c.id" class="column is-one-third">
                     <div class="card">
                         <header class="card-header">
                             <p class="card-header-title">
@@ -42,11 +42,11 @@
                             <a href="#" class="card-footer-item">
                                 <input type="radio"
                                         v-bind:id="c.id"
-                                        name="challangeSelect"
+                                        name="challengeSelect"
                                         v-bind:value="c"
-                                        v-model="challange"
-                                        v-on:change="changeChallange"
-                                        v-bind:checked="c.id ==  userData.user.default_challange">
+                                        v-model="challenge"
+                                        v-on:change="changeChallenge"
+                                        v-bind:checked="c.id ==  userData.user.default_challenge">
                                 <label v-bind:for="c.id"> Välj</label>
                             </a>
                         </footer>
@@ -61,27 +61,27 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { userData } from '../main';
-import Challange from '../entities/Challange';
+import Challenge from '../entities/Challenge';
 
 @Component
-export default class Challanges extends Vue {
+export default class Challenges extends Vue {
     data() {
         return {
-            challanges: [],
-            challange: null,
+            challenges: [],
+            challenge: null,
             userData: userData
         };
     }
 
-    changeChallange() {
-        userData.user.default_challange = this.$data.challange.id;
+    changeChallenge() {
+        userData.user.default_challenge = this.$data.challenge.id;
         userData.saveUser().then(() => userData.loadUser( userData.user.id));
     }
 
     beforeMount() {
-        userData.loadChallanges().then((c:Challange[]) => { 
-            this.$data.challanges = c;
-            this.$data.challange = c.find((c:Challange) => c.id == userData.user.default_challange);
+        userData.loadChallenges().then((c:Challenge[]) => { 
+            this.$data.challenges = c;
+            this.$data.challenge = c.find((c:Challenge) => c.id == userData.user.default_challenge);
         });
     }
 }

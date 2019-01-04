@@ -1,5 +1,5 @@
 import { countdown } from '../main';
-class Challange {
+class Challenge {
     id: string = '';
     name: string = '';
     description: string = '';
@@ -32,4 +32,4 @@ class Challange {
         }, 1000);
     }
 }
-export default Challange;
+export default Challenge;
