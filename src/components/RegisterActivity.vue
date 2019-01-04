@@ -96,14 +96,15 @@ export default class RegisterActivity extends Vue {
             kcal: (userData.selectedActivity.mets * (userData.user.weight ? userData.user.weight : 82) * (<number>mins  / 60)).toFixed(0),
             aid: userData.selectedActivity.id,
             cid: userData.challange.id,
-            uid: userData.user.id,
+            uid: userData.user.uid,
             created: this.$data.datetime,
         }, { merge: true }).then(() => {
-            this.$snackbar.open({
+            this.$toast.open({
                 message: this.minutes + ' minuter ' + userData.selectedActivity.text + ' tillagt',
                 position: 'is-top',
+                type: 'is-success'
             });
-        });
+        }).catch(e => console.log(e));
         userData.user.favoriteActivity = userData.selectedActivity.id;
         userData.saveUser();
     }
@@ -114,9 +115,10 @@ export default class RegisterActivity extends Vue {
         stravaImporter.doImport(<string>stravaCode).then(entries => {
             console.log(entries);
         }).catch(() => {
-            this.$snackbar.open({
+            this.$toast.open({
                 message: 'Importen misslyckades :(',
                 position: 'is-top',
+                type: 'is-danger'
             });
         })
     }

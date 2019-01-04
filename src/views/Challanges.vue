@@ -33,7 +33,9 @@
                                 <br>
                                 Till: <b><time>{{ c.enddate | moment('LLL')  }}</time></b>
                                 <br>
-                                Status: <b v-if="c.status() == 'ended'" class="has-text-danger">Avslutad</b> <b v-if="c.status() == 'started'" class="has-text-warning">Påbörjad</b> <b v-if="c.status() == 'notstarted'" class="has-text-success">Inte påbörjad</b> 
+                                Status: <b v-if="c.status() == 'ended'" class="has-text-danger">Avslutad</b> 
+                                <b v-if="c.status() == 'started'" class="has-text-warning">Påbörjad</b> 
+                                <b v-if="c.status() == 'notstarted'" class="has-text-success">Inte påbörjad</b> 
                             </div>
                         </div>
                         <footer class="card-footer">

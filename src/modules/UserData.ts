@@ -82,13 +82,13 @@ class UserData {
         self.entriesData.entries = [];
         db.collection('users').doc(userId).get().then(user => {
             const cid = this.user.default_challange;
-            if(!cid)
-             return;
             const u = user.data();
+            if(!cid || !u)
+             return;
             if(u)
                 this.entriesData.loadedUsersName = u.name;
             return db.collection('entries')
-            .where('uid', '==', user.id)
+            .where('uid', '==', u.uid)
             .where('cid', '==', cid)
             .orderBy("created", "desc")
             .where('created', '>=', this.challange.startdate)
@@ -138,10 +138,10 @@ class UserData {
         users.docs.forEach(user => {
           const u = user.data();
           const cid = this.user.default_challange;
-          if(!cid)
+          if(!cid || !u)
             return;
           return db.collection('entries')
-            .where('uid', '==', user.id)
+            .where('uid', '==', u.uid)
             .where('cid', '==', cid)
             .orderBy("created", "desc")
             .where('created', '>=', this.challange.startdate)
@@ -173,7 +173,7 @@ class UserData {
                 this.isLoading = false;
             });
         });
-      }).catch((e) => console.log(e));
+      });
     }
 
     public saveUser() {

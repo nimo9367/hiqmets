@@ -53,6 +53,7 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     userData.isLoggedIn = true;
     userData.loadUser(user.uid);
+    
   }
   else
     userData.isLoggedIn = false;

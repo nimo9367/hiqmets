@@ -31,12 +31,6 @@
                             <option value="woman">Kvinna</option>
                         </b-select>
                     </b-field>
-                    <b-field label="Längd (cm)">
-                        <b-input v-model="userData.user.length"  
-                            type="number"
-                            min="100"
-                            max="250"></b-input>
-                    </b-field>
                     <b-field label="Vikt (kg)">
                         <b-input v-model="userData.user.weight"
                             type="number"

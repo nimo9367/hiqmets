@@ -1,5 +1,6 @@
 class User {
     public id: string = '';
+    public uid: string = '';
     public email: string = '';
     public name: string = '';
     public length: number = 0;
