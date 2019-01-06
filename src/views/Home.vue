@@ -117,6 +117,17 @@
                 </p>
               </footer>
             </div>
+            
+            <div class="spacer-top columns">
+              <div class="column is-half">
+              <article class="message is-info">
+                <div class="message-body"> 
+                  Poängen räknas ut genom aktiviteternas <a>METs</a> (ett mått på en given aktivitets krävda ansträngning) multiplicerat med antal minuter. 
+                    Här finns även möjlighet att filtrear topplistan på aktivetstyperna löpning, cykling samt övriga.
+                </div>
+              </article>
+              </div>
+            </div>
           </div>
         </div>
       </div>

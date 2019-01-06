@@ -6888,9 +6888,6 @@ a {
 .message-header {
   font-weight: 700; }
 
-.message-body {
-  border-width: 2px; }
-
 .navbar {
   border-radius: 0.4em; }
   .navbar .navbar-menu {
@@ -7069,5 +7066,5 @@ body > .navbar {
     .hero.is-danger .navbar .navbar-dropdown .navbar-item:not(.is-active):not(:hover) {
       color: #34495e; } }
 
-
+.spacer-top {margin-top: 2em}
 /*# sourceMappingURL=bulmaswatch.min.css.map */

@@ -29,7 +29,15 @@
                                     </a>
                                 </div>
                                 
-                                <p class="has-text-grey has-text-centered">Eller logga in med email</p>
+                                <div class="field">
+                                    <a class="button input" href="#/sign-up">
+                                        <span class="icon">
+                                            <i class="fa fa-star"></i>
+                                        </span>
+                                        <span>Skapa nytt konto</span>
+                                    </a>
+                                </div>
+                                <p class="has-text-grey has-text-centered" style="margin-top:20px">eller logga in med email</p>
                                 <div class="field">
                                     <label class="label">Email</label>
                                     <input class="input" v-model="email" type="text" placeholder="kalle.kula@hiq.se" /><br>
