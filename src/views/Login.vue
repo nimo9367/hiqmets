@@ -7,7 +7,7 @@
                     Logga in
                 </h1>
                 <h2 class="subtitle">
-                    <p>Har du inget konto ? Du kan <router-link to="/sign-up">skapa ett </router-link></p>
+                    <p>Har du inget konto? Du kan <router-link to="/sign-up"><span class="has-text-link">skapa ett</span></router-link></p>
                 </h2>
                 </div>
             </div>
@@ -17,17 +17,35 @@
                 <div class="columns">
                     <div class="column is-4 is-offset-4">
                         <img src="../assets/logo_large.png">
-                        <div class="field">
-                            <label class="label">Email</label>
-                            <input class="input" v-model="email" type="text" placeholder="kalle.kula@hiq.se" /><br>
-                        </div>
-                        <div class="field">
-                            <label class="label">Lösenord</label>
-                            <input class="input" v-model="password" type="password" placeholder="" /><br>
-                        </div>
                         
-                        <div class="field">
-                            <input type="submit" class="button is-primary input" value="Logga in"/>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="field">
+                                    <a class="button is-danger input" @click="signInWithGoogle">
+                                        <span class="icon">
+                                            <i class="fab fa-google"></i>
+                                        </span>
+                                        <span>Logga in med Google</span>
+                                    </a>
+                                </div>
+                                
+                                <p class="has-text-grey has-text-centered">Eller logga in med email</p>
+                                <div class="field">
+                                    <label class="label">Email</label>
+                                    <input class="input" v-model="email" type="text" placeholder="kalle.kula@hiq.se" /><br>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Lösenord</label>
+                                    <input class="input" v-model="password" type="password" placeholder="" /><br>
+                                    <div class="has-text-right is-size-7">
+                                        <a @click="resetPassword">Återställ lösenord</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="field">
+                                    <input type="submit" class="button is-primary input" value="Logga in"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -51,7 +69,7 @@
         methods: {
             login() {
                 const self = this;
-                firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+                auth.signInWithEmailAndPassword(this.email, this.password).then(
                     (user) => {
                         self.$router.push({name: 'home'});
                     },
@@ -73,6 +91,26 @@
                     },
                 );
             },
+            signInWithGoogle: function() {
+                const provider = new firebase.auth.GoogleAuthProvider()
+                firebase.auth().signInWithRedirect(provider).then((result) => {
+                    console.log(result)
+                }).catch(err => console.log(err))
+            },
+            resetPassword() {
+                const self = this;
+                firebase.auth().sendPasswordResetEmail(this.$data.email).then(function() {
+                    self.$toast.open({
+                        message: 'Email skickat',
+                        type: 'is-success'
+                    });
+                }).catch(function(error) {
+                    self.$toast.open({
+                        message: 'Något gick snett: "' + error + "'",
+                        type: 'is-danger'
+                    });
+                });
+            }
         },
     };
 </script>

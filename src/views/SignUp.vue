@@ -8,7 +8,7 @@
                     Skapa konto
                 </h1>
                 <h2 class="subtitle">
-                    <p>Har du redan ett konto? Logga in <router-link to="/login">här </router-link></p>
+                    <p>Har du redan ett konto? Logga in <router-link to="/login"><span class="has-text-link">här</span></router-link></p>
                 </h2>
                 </div>
             </div>
@@ -18,19 +18,22 @@
                 <div class="columns">
                     <div class="column is-4 is-offset-4">
                         <img src="../assets/logo_large.png">
-                        
-                        <b-field label="Namn">
-                            <b-input v-model="username" type="text" placeholder="Kalle Kula" minlength="5" maxlength="30"></b-input>
-                        </b-field>
-                        <b-field label="Email">
-                            <b-input v-model="email" type="email" placeholder="kalle.kula@hiq.se" ></b-input>
-                        </b-field>
-                        <b-field label="Lösenord">
-                            <b-input v-model="password" type="password" minlength="6">
-                            </b-input>
-                        </b-field>
-                        <div class="field">
-                            <input type="submit" class="button is-primary input" value="Skapa"/>
+                        <div class="card">
+                            <div class="card-content">
+                                <b-field label="Namn">
+                                    <b-input v-model="username" type="text" placeholder="Kalle Kula" minlength="5" maxlength="30"></b-input>
+                                </b-field>
+                                <b-field label="Email">
+                                    <b-input v-model="email" type="email" placeholder="kalle.kula@hiq.se" ></b-input>
+                                </b-field>
+                                <b-field label="Lösenord">
+                                    <b-input v-model="password" type="password" minlength="6">
+                                    </b-input>
+                                </b-field>
+                                <div class="field">
+                                    <input type="submit" class="button is-primary input" value="Skapa"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -42,7 +45,7 @@
  <script>
     import firebase from 'firebase';
     import router from '../router';
-    import { db } from '../main';
+    import { db, userData } from '../main';
 
     export default {
         name: 'signUp',
@@ -62,7 +65,7 @@
                             name: this.$data.username,
                             email: this.$data.email
                         };
-                        db.collection('users').add(newUser).then(() => router.push({ name: 'home'}));
+                        userData.createUser(newUser).then(() => router.push({ name: 'home'}));
                     },
                     (err) => {
                         this.$toast.open({

@@ -6904,7 +6904,7 @@ a {
       color: #ecf0f1; }
       .navbar .navbar-menu {
         background-color: #ecf0f1;
-        border-radius: 0 0 0.4em 0.4em; }
+        border-radius: 0; }
       .navbar .navbar-item:not(.is-active):not(:hover),
       .navbar .navbar-link:not(.is-active):not(:hover) {
         color: #34495e; } }
@@ -7068,5 +7068,6 @@ body > .navbar {
   @media screen and (min-width: 1088px) {
     .hero.is-danger .navbar .navbar-dropdown .navbar-item:not(.is-active):not(:hover) {
       color: #34495e; } }
+
 
 /*# sourceMappingURL=bulmaswatch.min.css.map */

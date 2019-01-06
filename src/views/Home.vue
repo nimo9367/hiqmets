@@ -3,9 +3,20 @@
     <div class="hero is-light">
       <div class="hero-body">
         <div v-if="challenge" class="container">
-          <h1 class="title">
-            {{ challenge.name }}
-          </h1>
+            <b-collapse :open="false">
+              <a  slot="trigger">
+                <h1 class="title has-text-link">
+                  {{ challenge.name }}
+                </h1>
+              </a>
+              <div class="">
+                  <div class="notification">
+                      <h2 class="subtitle has-text-grey-dark">
+                      {{ challenge.description }}
+                      </h2>
+                  </div>
+              </div>
+          </b-collapse>
           <h2 class="subtitle">
             {{ challenge.countDownStr }}
           </h2>
@@ -18,8 +29,8 @@
           <div class="column  is-one-quarter">
             <RegisterActivity></RegisterActivity>
           </div>
-          <div class="column auto">
-            <nav class="level">
+          <div class="column auto is-mobile">
+            <nav class="level is-mobile">
               <p class="level-item has-text-centered">
                 <a class="link is-info" v-bind:class="{'has-text-weight-bold has-text-primary': !runOnly && !cycleOnly && !miscOnly}" @click="filterActivities('')">Alla</a>
               </p>

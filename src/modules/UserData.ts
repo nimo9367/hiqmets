@@ -35,9 +35,31 @@ class UserData {
         });
     }
 
-    public loadUser(uid: string) {
+    public createUser(user: any)
+    {
+        return db.collection('users').add(user);
+    }
+
+    public loadUser(user: any) {
         this.isLoading = true;
+        var uid = user.uid;
         db.collection('users').where('uid', '==', uid).get().then(snapshot => {
+
+            if(snapshot.empty)
+            {
+                // Authenticated but no user. Probably SSO with google or FB
+                if(user.providerData && user.providerData.length)
+                {
+                    const newUser = {
+                        uid: uid,
+                        name: user.providerData[0].displayName,
+                        email: user.providerData[0].email
+                    };
+                    this.createUser(newUser).then(() => this.loadUser(user));
+                }
+                
+                return;
+            }
             snapshot.forEach(x =>  {
                 this.user = x.data() as User;
                 this.user.id = x.id;
@@ -50,7 +72,7 @@ class UserData {
                         return;
                     this.user.default_challenge = snapshot.docs[0].id;
                     console.log("Default challenge missing. Setting default to: " + snapshot.docs[0].id);
-                    this.saveUser().then(() => this.loadUser(uid));
+                    this.saveUser().then(() => this.loadUser(user));
                     return;
                 });
             }

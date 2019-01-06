@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import './registerServiceWorker';
 import firebase from 'firebase';
 import UserData from './modules/UserData';
 import Buefy from 'buefy';
@@ -52,7 +51,7 @@ db.settings(settings);
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     userData.isLoggedIn = true;
-    userData.loadUser(user.uid);
+    userData.loadUser(user);
     
   }
   else

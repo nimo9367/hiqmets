@@ -1,8 +1,8 @@
 <template>
      <div class="card">
         <div class="card-image">
-            <figure class="image  is-4by3">
-            <img src="../assets/winter.jpg" alt="Placeholder image">
+            <figure class="image is-4by3 is-hidden-mobile">
+                <img src="../assets/winter.jpg" alt="Placeholder image">
             </figure>
         </div>
         <div class="card-content">

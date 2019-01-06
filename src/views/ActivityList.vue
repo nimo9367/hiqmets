@@ -25,11 +25,11 @@
       <div class="container">
         <section class="section">
           <div class="columns">
-            <div class="column  is-one-quarter">
+            <div class="column is-one-quarter is-mobile">
             <RegisterActivity v-bind:disabled="!isLoggedInUser"></RegisterActivity>
             </div>
             <div class="column auto">
-                <div class="columns heading">
+                <div class="columns heading is-mobile">
                   <div class="column is-four-fifths">
                     <nav class="level is-mobile">
                         <div class="level-item  has-text-centered">
@@ -53,7 +53,7 @@
                     </nav>
                   </div>
                 </div>
-                <div class="columns heading">
+                <div class="columns heading is-mobile">
                     <div class="column is-one-sixth">Datum</div>
                     <div class="column is-one-sixth">Aktivitet</div>
                     <div class="column is-one-sixth">Minuter</div>
@@ -61,7 +61,7 @@
                     <div class="column is-one-sixth">Poäng</div>
                     <div class="column is-one-sixth"></div>
                 </div>
-                <div v-for="entry in pagedEntries" class="columns" v-bind:key="entry.id">
+                <div v-for="entry in pagedEntries" class="columns  is-mobile" v-bind:key="entry.id">
                     <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
                     <div class="column is-one-sixth"><span class="tag is-success">{{ entry.activity }}</span></div>
                     <div class="column is-one-sixth">{{ entry.minutes }}</div>

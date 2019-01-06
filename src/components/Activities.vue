@@ -55,6 +55,8 @@ export default class Activites extends Vue {
                 acts.push(act);
             });
             userData.selectedActivity = acts.find((a) => a.id == userData.user.favoriteActivity);
+            if(!userData.selectedActivity)
+                userData.selectedActivity = acts.find((a) => a.text.indexOf('Löpning 5') == 0);
             userData.activities = acts;
         });
     }
