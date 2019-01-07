@@ -7067,4 +7067,7 @@ body > .navbar {
       color: #34495e; } }
 
 .spacer-top {margin-top: 2em}
+.spacer-bottom {margin-bottom: 2em}
+.spacer-left {margin-left: 2em}
+.spacer-right {margin-right: 2em}
 /*# sourceMappingURL=bulmaswatch.min.css.map */

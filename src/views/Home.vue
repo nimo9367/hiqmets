@@ -4,16 +4,18 @@
       <div class="hero-body">
         <div v-if="challenge" class="container">
             <b-collapse :open="false">
-              <a  slot="trigger">
+              <a slot="trigger">
                 <h1 class="title has-text-link">
-                  {{ challenge.name }}
+                  <span class="has-text-link">{{ challenge.name }}</span>
                 </h1>
               </a>
               <div class="">
-                  <div class="notification">
-                      <h2 class="subtitle has-text-grey-dark">
-                      {{ challenge.description }}
-                      </h2>
+                  <div class="spacer-bottom">
+                    <article class="message ">
+                      <div class="message-body"> 
+                        {{ challenge.description }}
+                      </div>
+                    </article>
                   </div>
               </div>
           </b-collapse>
@@ -26,9 +28,6 @@
     <div class="container">
       <div class="section">
         <div class="columns">
-          <div class="column  is-one-quarter">
-            <RegisterActivity></RegisterActivity>
-          </div>
           <div class="column auto is-mobile">
             <nav class="level is-mobile">
               <p class="level-item has-text-centered">
@@ -80,7 +79,7 @@
                     </nav>
                   </div>
                 </div>
-                <div class="columns is-vcentered is-mobile" v-for="stats in userData.statsData.userStats" v-bind:key="stats.uid" >
+                <div class="columns is-vcentered is-mobile" v-for="stats in userStats" v-bind:key="stats.uid">
                   <div class="column is-one-fifth has-text-right">
                     <a href="#"><router-link :to="{ name: 'ActivityList', params: {userId: stats.uid } }">
                       <div class="columns is-vcentered is-mobile">
@@ -119,15 +118,20 @@
             </div>
             
             <div class="spacer-top columns">
-              <div class="column is-half">
+              <div class="column">
               <article class="message is-info">
                 <div class="message-body"> 
-                  Poängen räknas ut genom aktiviteternas <a>METs</a> (ett mått på en given aktivitets krävda ansträngning) multiplicerat med antal minuter. 
-                    Här finns även möjlighet att filtrear topplistan på aktivetstyperna löpning, cykling samt övriga.
+                  Poängen räknas ut genom aktiviteternas METs multiplicerat med antal minuter den givna aktiviteten är utförd. <a href="https://en.wikipedia.org/wiki/Metabolic_equivalent">METs</a> 
+                  (metabolic equivalent of task) är ett objektivt ratio av den energi som en person gör av med relativt till personens massa. Som exempel kan ex. motsvarar 1 kcal: <b>1 * METs * vikt(kg) * timmar</b>.
+                  Genom att använda MET som en faktor för att räkna ut poängen kan vi således få ett något som är jämförbart oberoende av utförd aktivitet samt personens vikt.
                 </div>
               </article>
               </div>
             </div>
+          </div>
+          
+          <div class="column  is-one-quarter">
+            <RegisterActivity></RegisterActivity>
           </div>
         </div>
       </div>
@@ -152,6 +156,10 @@ export default class Home extends Vue {
       challenge: userData.challenge,
       userData: userData
     };
+  }
+
+  get userStats() {
+    return userData.statsData.userStats.filter((s:any) => s.totalPoints > 0);
   }
 
   get total() {

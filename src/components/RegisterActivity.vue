@@ -1,52 +1,72 @@
 <template>
-     <div class="card">
-        <div class="card-image">
-            <figure class="image is-4by3 is-hidden-mobile">
-                <img src="../assets/winter.jpg" alt="Placeholder image">
-            </figure>
-        </div>
-        <div class="card-content">
-            <div class="media">
-                <p class="title is-4">Registrera aktivitet</p>
+    <div>
+        <div v-if="!quickAdd" class="card">
+            <div class="card-image">
+                <figure class="image is-4by3 is-hidden-mobile">
+                    <img src="../assets/winter.jpg" alt="Placeholder image">
+                </figure>
             </div>
-            <div class="content">
-                <span>
-                Lägg till aktivitet och tid spenderad. Du ges en poäng baserad på aktivitetens <a href="https://en.wikipedia.org/wiki/Metabolic_equivalent">METs</a>.
-                </span>
-            </div>
-            <div class="content">
-                <Activities v-bind:disabled="disabled"></Activities>
-                <div class="field">
+            <div class="card-content">
+                <div class="media">
+                    <p class="title is-4">Registrera aktivitet</p>
+                </div>
+                <div class="content">
+                    <span>
+                    Lägg till aktivitet och tid spenderad. Du ges en poäng baserad på aktivitetens <a href="https://en.wikipedia.org/wiki/Metabolic_equivalent">METs</a>.
+                    </span>
+                </div>
+                <div class="content">
+                    <Activities v-bind:disabled="disabled"></Activities>
+                    <div class="field">
+                        <b-field>
+                            <b-input v-bind:disabled="disabled" v-model="minutes"
+                                placeholder="Minuter spenderade"
+                                type="number"
+                                icon="clock">
+                            </b-input>
+                        </b-field>
+                    </div>
+                    <b-field label="Tidpunkt">
+                        <b-datepicker
+                            v-bind:disabled="disabled" 
+                            v-model="datetime"
+                            placeholder="Click to select..."
+                            icon="calendar">
+                        </b-datepicker>
+                    </b-field> 
                     <b-field>
-                        <b-input v-bind:disabled="disabled" v-model="minutes"
-                            placeholder="Minuter spenderade"
-                            type="number"
-                            icon="clock">
-                        </b-input>
+                        <b-timepicker
+                            v-bind:disabled="disabled" 
+                            v-model="datetime"
+                            placeholder="Type or select a date..."
+                            icon="clock"
+                            editable>
+                        </b-timepicker>
                     </b-field>
                 </div>
-                <b-field label="Tidpunkt">
-                    <b-datepicker
-                        v-bind:disabled="disabled" 
-                        v-model="datetime"
-                        placeholder="Click to select..."
-                        icon="calendar">
-                    </b-datepicker>
-                </b-field> 
-                <b-field>
-                    <b-timepicker
-                        v-bind:disabled="disabled" 
-                        v-model="datetime"
-                        placeholder="Type or select a date..."
-                        icon="clock"
-                        editable>
-                    </b-timepicker>
-                </b-field>
+            </div>
+            <footer v-if="!disabled" class="card-footer">
+            <a @click="save" class="card-footer-item">Lägg till</a>
+            </footer>
+        </div>
+        <div v-if="quickAdd" >
+             <div class="modal-card" style="width:300px;">
+                <section class="modal-card-body">
+                    <Activities v-bind:disabled="disabled"></Activities>
+                    <div class="field">
+                        <b-field>
+                            <b-input v-bind:disabled="disabled" v-model="minutes"
+                                placeholder="Minuter spenderade"
+                                type="number"
+                                icon="clock">
+                            </b-input>
+                        </b-field>
+                    </div>
+                    
+                    <a @click="save" class="button is-primary input">Lägg till</a>
+                </section>
             </div>
         </div>
-        <footer v-if="!disabled" class="card-footer">
-        <a @click="save" class="card-footer-item">Spara</a>
-        </footer>
     </div>
 </template>
 
@@ -61,7 +81,7 @@ import Entry from '@/entities/Entry';
 
 Vue.component('Activities', Activities);
 
-@Component({props: ['disabled']})
+@Component({props: ['disabled', 'quickAdd']})
 export default class RegisterActivity extends Vue {
     name = 'RegisterActivity';
     minutes = null;

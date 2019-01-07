@@ -75,7 +75,7 @@ export default class Challenges extends Vue {
 
     changeChallenge() {
         userData.user.default_challenge = this.$data.challenge.id;
-        userData.saveUser().then(() => userData.loadUser( userData.user.id));
+        userData.saveUser().then(() => userData.loadUser(userData.user));
     }
 
     beforeMount() {

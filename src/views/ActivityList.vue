@@ -25,57 +25,57 @@
       <div class="container">
         <section class="section">
           <div class="columns">
-            <div class="column is-one-quarter is-mobile">
-            <RegisterActivity v-bind:disabled="!isLoggedInUser"></RegisterActivity>
-            </div>
             <div class="column auto">
-                <div class="columns heading is-mobile">
-                  <div class="column is-four-fifths">
-                    <nav class="level is-mobile">
-                        <div class="level-item  has-text-centered">
-                            <div>
-                            <p class="heading">Minuter</p>
-                            <p class="title">{{ userData.entriesData.totalMinutes }}</p>
-                            </div>
+              <div class="columns heading is-mobile">
+                <div class="column is-four-fifths">
+                  <nav class="level is-mobile">
+                    <div class="level-item  has-text-centered">
+                        <div>
+                        <p class="heading">Minuter</p>
+                        <p class="title">{{ userData.entriesData.totalMinutes }}</p>
                         </div>
-                        <div class="level-item  has-text-centered">
-                            <div>
-                            <p class="heading">Kcal</p>
-                            <p class="title">{{ userData.entriesData.totalKcal }}</p>
-                            </div>
+                    </div>
+                    <div class="level-item  has-text-centered">
+                        <div>
+                        <p class="heading">Kcal</p>
+                        <p class="title">{{ userData.entriesData.totalKcal }}</p>
                         </div>
-                        <div class="level-item  has-text-centered">
-                            <div>
-                            <p class="heading">Poäng</p>
-                            <p class="title has-text-success">{{ userData.entriesData.totalPoints }}</p>
-                            </div>
+                    </div>
+                    <div class="level-item  has-text-centered">
+                        <div>
+                        <p class="heading">Poäng</p>
+                        <p class="title has-text-success">{{ userData.entriesData.totalPoints }}</p>
                         </div>
-                    </nav>
-                  </div>
+                    </div>
+                  </nav>
                 </div>
-                <div class="columns heading is-mobile">
-                    <div class="column is-one-sixth">Datum</div>
-                    <div class="column is-one-sixth">Aktivitet</div>
-                    <div class="column is-one-sixth">Minuter</div>
-                    <div class="column is-one-sixth">Kcal</div>
-                    <div class="column is-one-sixth">Poäng</div>
-                    <div class="column is-one-sixth"></div>
-                </div>
-                <div v-for="entry in pagedEntries" class="columns  is-mobile" v-bind:key="entry.id">
-                    <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
-                    <div class="column is-one-sixth"><span class="tag is-success">{{ entry.activity }}</span></div>
-                    <div class="column is-one-sixth">{{ entry.minutes }}</div>
-                    <div class="column is-one-sixth">{{ entry.kcal }}</div>
-                    <div class="column is-one-sixth has-text-success">{{ entry.points }}</div>
-                    <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
-                    <div v-else class="column is-one-sixth"></div>
-                </div>
+              </div>
+              <div class="columns heading is-mobile">
+                  <div class="column is-one-sixth">Datum</div>
+                  <div class="column is-one-sixth">Aktivitet</div>
+                  <div class="column is-one-sixth">Minuter</div>
+                  <div class="column is-one-sixth">Kcal</div>
+                  <div class="column is-one-sixth">Poäng</div>
+                  <div class="column is-one-sixth"></div>
+              </div>
+              <div v-for="entry in pagedEntries" class="columns  is-mobile" v-bind:key="entry.id">
+                  <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
+                  <div class="column is-one-sixth"><span class="tag is-success">{{ entry.activity }}</span></div>
+                  <div class="column is-one-sixth">{{ entry.minutes }}</div>
+                  <div class="column is-one-sixth">{{ entry.kcal }}</div>
+                  <div class="column is-one-sixth has-text-success">{{ entry.points }}</div>
+                  <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
+                  <div v-else class="column is-one-sixth"></div>
+              </div>
               <div class="columns">
-                 <div class="column">
+                <div class="column">
                   <a v-if="current > 0" @click="less" role="button" href="#" class="pagination-next"><span class="icon"><i class="fas fa-angle-left fa-lg"></i></span></a>
                   <a v-if="userData.entriesData.entries.length > (this.current + 1) * 10" @click="more" role="button" href="#" class="pagination-next"><span class="icon"><i class="fas fa-angle-right fa-lg"></i></span></a>
                 </div>
               </div>
+            </div>
+            <div class="column is-one-quarter is-mobile">
+              <RegisterActivity v-bind:disabled="!isLoggedInUser"></RegisterActivity>
             </div>
           </div>
         </section>

@@ -7,7 +7,7 @@
             Din profil
           </h1>
           <h2 class="subtitle">
-            Modifiera din information
+            Ändra dina uppgifter
           </h2>
         </div>
       </div>

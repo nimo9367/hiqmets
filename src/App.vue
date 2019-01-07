@@ -12,6 +12,18 @@
             <img src="./assets/logo.png" width="56" height="28">
           </router-link>
           </a>
+          
+          <div class="navbar-item">
+            <b-dropdown>
+                <button class="button is-success is-small" slot="trigger">
+                    <b-icon icon="plus-circle"></b-icon>
+                    <span>Aktivitet</span>
+                </button>
+                <b-dropdown-item custom paddingless>
+                  <RegisterActivity v-bind:quickAdd="true"></RegisterActivity>
+                </b-dropdown-item>
+            </b-dropdown>
+          </div>
           <a role="button" class="navbar-burger burger" v-bind:class="{'is-active': burgerActive}" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" @click="toggleBurger">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
