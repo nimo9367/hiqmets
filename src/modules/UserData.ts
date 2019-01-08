@@ -41,8 +41,8 @@ class UserData {
     }
 
     
-    public getAvatarUrl(user: User) {
-        return user.avatar ? user.avatar : 'https://api.adorable.io/avatars/100/' + user.uid + '.png';
+    public getAvatarUrl(u: User) {
+        return u.avatar ? u.avatar : 'https://api.adorable.io/avatars/100/' + u.uid + '.png';
     }
 
     public loadUser(user: any) {
@@ -101,7 +101,9 @@ class UserData {
         totalKcal: 0,
         totalPoints: 0,
         loadedUsersName: '',
-        entries: <any>[]
+        entries: <any>[],
+        uid: '',
+        avatar: ''
     }
     public loadEntries(userId:string) {
         this.isLoading = true;
@@ -112,8 +114,11 @@ class UserData {
             const u = user.data();
             if(!cid || !u)
              return;
-            if(u)
+            if(u) {
                 self.entriesData.loadedUsersName = u.name;
+                self.entriesData.uid = u.id;
+                self.entriesData.avatar = u.avatar;
+            }
             return db.collection('entries')
             .where('uid', '==', u.uid)
             .where('cid', '==', cid)

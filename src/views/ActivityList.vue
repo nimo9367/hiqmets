@@ -6,7 +6,7 @@
            <div class="media">
             <div class="media-left">
               <figure class="image is-64x64">
-                <img class="is-rounded" v-bind:src="userData.getAvatarUrl(userData.user)">
+                <img class="is-rounded" v-bind:src="userData.getAvatarUrl(userData.entriesData)">
               </figure>
             </div>
             <div class="media-content">
