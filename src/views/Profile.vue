@@ -17,9 +17,20 @@
         <form>
             <div class="columns">
                 <div class="column is-4">
-                    <b-field label="Namn">
-                        <b-input v-model="userData.user.name"></b-input>
-                    </b-field>
+                    <div class="columns">
+                        <div class="column is-one-third">
+                          <figure class="image is-128x128" >
+                            <img class="is-rounded" v-bind:src="userData.getAvatarUrl(userData.user)">
+                          </figure>
+                        </div>
+                        <div class="column auto">
+                            <b-field label="Namn">
+                                <b-input v-model="userData.user.name"></b-input>
+                            </b-field>
+                            <label class="label">Avatar (ratio 1:1 max 1MB)</label>
+                            <FileUploader v-bind:imgName="'profile_pics/' + userData.user.uid" v-on:url="setImgUrl"></FileUploader>
+                        </div>
+                    </div>
                     <div class="content">
                         <p>Nedan följer information vilken endast används för att ge en bättre beräknad kaloriförbrukning. Bryr du dig inte om det kan du skita i det.</p>
                     </div>
@@ -48,6 +59,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { userData } from '../main';
+import FileUploader from '@/components/FileUploader.vue';
+Vue.component('FileUploader', FileUploader);
 
 @Component
 export default class Profile extends Vue {
@@ -58,6 +71,10 @@ export default class Profile extends Vue {
         userData.saveUser().then(() => {
             this.$toast.open('Profil sparad')
         });
+    }
+    setImgUrl(imgUrl: string) {
+        userData.user.avatar = imgUrl;
+        this.saveUser();
     }
 }
 </script>

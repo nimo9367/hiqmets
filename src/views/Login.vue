@@ -76,7 +76,7 @@
         methods: {
             login() {
                 const self = this;
-                auth.signInWithEmailAndPassword(this.email, this.password).then(
+                firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
                     (user) => {
                         self.$router.push({name: 'home'});
                     },

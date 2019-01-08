@@ -86,20 +86,34 @@
                         <div class="column">
                           <h1 class="is-vcentered">{{stats.name}}</h1>
                         </div>
-                        <div class="column is-narrow">
+                        <div class="column is-narrow  is-hidden-mobile">
                           <figure class="image is-32x32" >
-                            <img class="is-rounded" v-bind:src="'https://api.adorable.io/avatars/100/' + stats.uid + '.png'">
+                            <img class="is-rounded" v-bind:src="userData.getAvatarUrl(stats)">
                           </figure>
                         </div>
                       </div>
                       </router-link>
                     </a>
                   </div>
-                  <div class="column is-three-fifth ">
+                  <div class="column is-three-fifth">
                       <progress class="progress is-large" v-bind:class="[chartType == 'points' ? 'is-primary' : chartType == 'kcal' ? 'is-danger' : 'is-warning']" v-bind:value="((chartType == 'points' ? stats.totalPoints : chartType == 'kcal' ? stats.totalKcal : stats.totalTime) / max) * 100" max="100">100%</progress>
                   </div>
                   <div class="column is-one-fifth">
-                    <h1>{{ chartType == 'points' ? stats.totalPoints + ' Poäng' : chartType == 'kcal' ? stats.totalKcal + ' Kcal' : stats.totalTime + ' Minuter' }}</h1>
+                    <div class="dropdown is-hoverable">
+                      <div class="dropdown-trigger">
+                        <a aria-haspopup="true" aria-controls="dropdown-menu4">
+                          <h1>{{ chartType == 'points' ? stats.totalPoints + ' Poäng' : chartType == 'kcal' ? stats.totalKcal + ' Kcal' : stats.totalTime + ' Minuter' }}</h1>
+                        </a>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                        <div class="dropdown-content">
+                          <div class="dropdown-item">
+                            <span v-if="stats.nextPositionText" v-html="stats.nextPositionText"></span>
+                            <span v-else>Just nu är {{stats.name}} ledare</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -122,7 +136,7 @@
               <article class="message is-info">
                 <div class="message-body"> 
                   Poängen räknas ut genom aktiviteternas METs multiplicerat med antal minuter den givna aktiviteten är utförd. <a href="https://en.wikipedia.org/wiki/Metabolic_equivalent">METs</a> 
-                  (metabolic equivalent of task) är ett objektivt ratio av den energi som en person gör av med relativt till personens massa. Som exempel kan ex. motsvarar 1 kcal: <b>1 * METs * vikt(kg) * timmar</b>.
+                  (metabolic equivalent of task) är ett objektivt ratio av den energi som en person gör av med relativt till personens massa. Som exempel motsvarar 1 kcal: <b>1 * METs * vikt(kg) * timmar</b>.
                   Genom att använda MET som en faktor för att räkna ut poängen kan vi således få ett något som är jämförbart oberoende av utförd aktivitet samt personens vikt.
                 </div>
               </article>

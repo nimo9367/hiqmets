@@ -40,6 +40,11 @@ class UserData {
         return db.collection('users').add(user);
     }
 
+    
+    public getAvatarUrl(user: User) {
+        return user.avatar ? user.avatar : 'https://api.adorable.io/avatars/100/' + user.uid + '.png';
+    }
+
     public loadUser(user: any) {
         this.isLoading = true;
         var uid = user.uid;
@@ -103,47 +108,47 @@ class UserData {
         const self = this;
         self.entriesData.entries = [];
         db.collection('users').doc(userId).get().then(user => {
-            const cid = this.user.default_challenge;
+            const cid = self.user.default_challenge;
             const u = user.data();
             if(!cid || !u)
              return;
             if(u)
-                this.entriesData.loadedUsersName = u.name;
+                self.entriesData.loadedUsersName = u.name;
             return db.collection('entries')
             .where('uid', '==', u.uid)
             .where('cid', '==', cid)
             .orderBy("created", "desc")
-            .where('created', '>=', this.challenge.startdate)
-            .where('created', '<=', this.challenge.enddate)
+            .where('created', '>=', self.challenge.startdate)
+            .where('created', '<=', self.challenge.enddate)
             .limit(100)
             .onSnapshot((entries: any) => {
-                this.entriesData.totalMinutes = 0;
-                this.entriesData.totalKcal = 0;
-                this.entriesData.totalPoints = 0;
+                self.entriesData.totalMinutes = 0;
+                self.entriesData.totalKcal = 0;
+                self.entriesData.totalPoints = 0;
                 const stats: any[] = [];
                 entries.docs.forEach((e: any) => {
-                const entry = e.data();
-                const act = this.activities.find((a:any) => a.id == entry.aid);
-                const newEntry = {
-                    id: e.id,
-                    created: entry.created ? entry.created.seconds : '',
-                    activity: act ? act.text : '',
-                    minutes: entry.minutes,
-                    kcal: entry.kcal,
-                    points: entry.minutes * entry.mets,
-                };
+                    const entry = e.data();
+                    const act = self.activities.find((a:any) => a.id == entry.aid);
+                    const newEntry = {
+                        id: e.id,
+                        created: entry.created ? entry.created.seconds : '',
+                        activity: act ? act.text : '',
+                        minutes: entry.minutes,
+                        kcal: entry.kcal,
+                        points: entry.minutes * entry.mets,
+                    };
 
-                if(entry.minutes)
-                    this.entriesData.totalMinutes += parseInt(entry.minutes);
-                if(newEntry.kcal)
-                    this.entriesData.totalKcal += parseInt(newEntry.kcal);
-                if(newEntry.points)
-                    this.entriesData.totalPoints += parseInt(newEntry.points.toFixed(0));
+                    if(entry.minutes)
+                        self.entriesData.totalMinutes += parseInt(entry.minutes);
+                    if(newEntry.kcal)
+                        self.entriesData.totalKcal += parseInt(newEntry.kcal);
+                    if(newEntry.points)
+                        self.entriesData.totalPoints += parseInt(newEntry.points.toFixed(0));
 
-                stats.push(newEntry);
+                    stats.push(newEntry);
                 });
                 self.entriesData.entries = stats;
-                this.isLoading = false;
+                self.isLoading = false;
             });
         });
     }
@@ -170,11 +175,12 @@ class UserData {
             .where('created', '<=', this.challenge.enddate)
             .onSnapshot((entries: any) => {
                 const userObj = {
-                  uid: user.id,
-                  name: u.name,
-                  totalTime: 0,
-                  totalPoints: 0,
-                  totalKcal: 0
+                    uid: user.id,
+                    name: u.name,
+                    totalTime: 0,
+                    totalPoints: 0,
+                    totalKcal: 0,
+                    avatar: u.avatar,
                 };
                 stats = stats.filter(x => x.uid !=  user.id);
                 entries.docs.forEach((e: any) => {
@@ -191,6 +197,16 @@ class UserData {
                 });
                 stats.push(userObj);
                 stats.sort((a, b) => b.totalPoints - a.totalPoints );
+                if(stats.length > 1) {
+                    for(let i = 1; i < stats.length; i++) {
+                        let prev = stats[i - 1];
+                        let pointDiff = prev.totalPoints - stats[i].totalPoints;
+                        let runMins = (pointDiff / 11.5).toFixed(0);
+                        let bettanMins = (pointDiff / 9.5).toFixed(0);
+                        let walkMins = (pointDiff / 3.8).toFixed(0);
+                        stats[i].nextPositionText = '<b>' + runMins + '</b> minuter <b>löpning</b> 5.5 min/km, <b>' + bettanMins + '</b> minuter <b>bettanpass</b> eller <b>' + walkMins + '</b> minuter <b>promenad</b> i rask takt för att gå om <b>' + prev.name + '</b>';
+                    }
+                }
                 this.statsData.userStats = stats;
                 this.isLoading = false;
             });
@@ -199,6 +215,8 @@ class UserData {
     }
 
     public saveUser() {
+        if(this.user.weight === undefined)
+            this.user.weight = 0;
         return db.collection('users').doc(this.user.id).set(this.user);
     }
 

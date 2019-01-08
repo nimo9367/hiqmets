@@ -13,7 +13,7 @@
           </router-link>
           </a>
           
-          <div class="navbar-item">
+          <div class="navbar-item"  v-if="userData.isLoggedIn">
             <b-dropdown>
                 <button class="button is-success is-small" slot="trigger">
                     <b-icon icon="plus-circle"></b-icon>

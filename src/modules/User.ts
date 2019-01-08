@@ -8,6 +8,7 @@ class User {
     public sex: string = '';
     public favoriteActivity: string = '';
     public default_challenge: string = '';
+    public avatar: string = '';
 }
 
 export default User;

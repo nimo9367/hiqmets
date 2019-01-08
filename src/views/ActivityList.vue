@@ -6,7 +6,7 @@
            <div class="media">
             <div class="media-left">
               <figure class="image is-64x64">
-                <img class="is-rounded" v-bind:src="'https://api.adorable.io/avatars/100/' + userId + '.png'">
+                <img class="is-rounded" v-bind:src="userData.getAvatarUrl(userData.user)">
               </figure>
             </div>
             <div class="media-content">
@@ -146,7 +146,13 @@ export default class ActivityList extends Vue {
   }
 
   mounted() {
-    userData.loadEntries(this.$route.params.userId);
+    if(!userData.challenge.id.length){
+      userData.loadChallenges().then(() => {
+        userData.loadEntries(this.$route.params.userId);
+      })
+    }
+    else
+        userData.loadEntries(this.$route.params.userId);
   }
 }
 </script>
