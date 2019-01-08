@@ -141,6 +141,7 @@ class UserData {
                         minutes: entry.minutes,
                         kcal: entry.kcal,
                         points: entry.minutes * entry.mets,
+                        import_id: entry.import_id,
                     };
 
                     if(entry.minutes)

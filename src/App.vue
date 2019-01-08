@@ -45,7 +45,15 @@
               <router-link to="/profile">Profil</router-link>
             </a>
           </div>
+
           <div class="navbar-end">
+            
+            <a class="navbar-item has-text-link" @click="stravaImporter.authorize">
+              <span class="icon is-small">
+                <i class="fab fa-strava"></i>
+              </span>
+              <span > Import</span>
+            </a>
             <div class="navbar-item">
               <div class="buttons">
                 <a v-if="!userData.isLoggedIn" class="button is-primary">
@@ -67,7 +75,7 @@
     <footer class="footer">
       <div class="content has-text-centered">
         <p>
-          <strong>Workout Challenge </strong> 1.0.1-beta
+          <strong>Workout Challenge </strong> {{version}}
         </p>
       </div>
     </footer>
@@ -77,6 +85,7 @@
 <script>
   import firebase from 'firebase';
   import { userData } from './main';
+  import stravaImporter from './modules/StravaImporter';
 
   export default {
       name: 'app',
@@ -84,6 +93,8 @@
           return {
               userData: userData,
               burgerActive: false,
+              stravaImporter: stravaImporter,
+              version: require('../package.json').version
           };
       },
       methods: {

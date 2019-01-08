@@ -5,7 +5,7 @@ import Entry from '@/entities/Entry';
 class StravaImporter {
 
     
-    private static callback = 'http://localhost:8080/%23/activity_list/';
+    private static callback = window.location.origin +'/%23/activity_list/';
     private static clientId = '31123';
     private static clientSecret = '6401b0528ab1fe5c6d94b621555220b29973da7f';
 
@@ -21,16 +21,14 @@ class StravaImporter {
        }).then((response:any) => { 
             const type = response.data.token_type;
             const token = response.data.access_token;
-            const before = new Date().getTime() / 1000
+            let d = new Date();
+            d.setDate(d.getDate() + 1)
+            const before = (d.getTime() / 1000);
             const after = new Date(2018, 1, 1).getTime() / 1000
             return axios.get('https://www.strava.com/api/v3/athlete/activities?before=' + before + '&after=' + after + '&page=1&per_page=100', { headers: { Authorization: type + ' ' + token } }).then((response) => {
                 const data = response.data;
-                debugger;
                 var entries = data.map((act:any) => {
-                    const entry = new Entry();
-                    entry.stravaId = act.id;
-                    entry.minutes = parseInt((act.moving_time / 60).toFixed());
-                    return entry;
+                    return { id: act.id, type: act.type, start_date: act.start_date, speed: (act.elapsed_time/60)/(act.distance/1000), minutes: act.elapsed_time/60};
                 });
 
                 return entries;
