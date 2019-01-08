@@ -48,7 +48,7 @@
 
           <div class="navbar-end">
             
-            <a class="navbar-item has-text-link" @click="stravaImporter.authorize">
+            <a class="navbar-item has-text-link" @click="importFromStrava">
               <span class="icon is-small">
                 <i class="fab fa-strava"></i>
               </span>
@@ -106,6 +106,12 @@
         toggleBurger() {
           this.$data.burgerActive = !this.$data.burgerActive;
         },
+        importFromStrava() {
+          this.$dialog.confirm({
+              message: 'Just nu stöds bara import från <b>Strava</b>. Vill du fortsätta?',
+              onConfirm: () => stravaImporter.authorize()
+          })
+        }
       }
   };
 </script>

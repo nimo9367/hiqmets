@@ -147,6 +147,7 @@ export default class RegisterActivity extends Vue {
             userData.loadChallenges().then(() => {
                 
                 userData.loadEntries(this.$route.params.userId);
+                this.$router.push({ name: 'ActivityList', params: { userId: this.$route.params.userId } })
                 setTimeout(() => {
                     let numOfImports = 0;
                     entries.forEach((e:any) => {
@@ -175,8 +176,6 @@ export default class RegisterActivity extends Vue {
                             }
                         }
                     });
-                    
-            
                     this.$toast.open({
                         message: 'Importerade ' + numOfImports + ' aktivitet/er',
                         position: 'is-top'
