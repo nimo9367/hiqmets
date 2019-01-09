@@ -28,7 +28,7 @@ class StravaImporter {
             return axios.get('https://www.strava.com/api/v3/athlete/activities?before=' + before + '&after=' + after + '&page=1&per_page=100', { headers: { Authorization: type + ' ' + token } }).then((response) => {
                 const data = response.data;
                 var entries = data.map((act:any) => {
-                    return { id: act.id, type: act.type, start_date: act.start_date, speed: (act.elapsed_time/60)/(act.distance/1000), minutes: act.elapsed_time/60};
+                    return { id: act.id, type: act.type, start_date: act.start_date_local, speed: (act.elapsed_time/60)/(act.distance/1000), minutes: act.elapsed_time/60};
                 });
 
                 return entries;

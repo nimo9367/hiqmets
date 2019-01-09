@@ -107,11 +107,11 @@ export default class RegisterActivity extends Vue {
         if(this.disableSave)
             return;
 
-        this.saveActivity(userData.selectedActivity.id, this.minutes, userData.selectedActivity.mets, userData.selectedActivity.text, '');
+        this.saveActivity(userData.selectedActivity.id, this.minutes, userData.selectedActivity.mets, userData.selectedActivity.text, '', this.$data.datetime);
         userData.user.favoriteActivity = userData.selectedActivity.id;
         userData.saveUser();
     }
-    saveActivity(activityId: string, minutes: string|null, mets: number, activityText: string, importId: string,) {
+    saveActivity(activityId: string, minutes: string|null, mets: number, activityText: string, importId: string, datetime: Date) {
         const ref = db.collection('entries').doc();
         const mins = minutes == null ? 0 : minutes;
         var setWithMerge = ref.set({
@@ -121,7 +121,7 @@ export default class RegisterActivity extends Vue {
             aid: activityId,
             cid: userData.challenge.id,
             uid: userData.user.uid,
-            created: this.$data.datetime ? this.$data.datetime : new Date(),
+            created: datetime,
             import_id: importId,
         }, { merge: true }).then(() => {
             this.$toast.open({
@@ -153,11 +153,10 @@ export default class RegisterActivity extends Vue {
                     entries.forEach((e:any) => {
                         console.log(e);
                         let date = new Date(e.start_date);
-                        console.log(userData.challenge.startdate)
-                        console.log(userData.challenge.enddate)
+                        console.log(e.type)
                         if(date > userData.challenge.startdate && date < userData.challenge.enddate) {
+                            let act =  null;
                             if(e.type == 'Run') {
-                                let act =  null;
                                 if(e.speed < 4.3) 
                                     act = userData.activities.find((a:any) => a.id == 'GoVsauDModSzhqsvlRt8');
                                 else if(e.speed < 4.8)
@@ -168,11 +167,25 @@ export default class RegisterActivity extends Vue {
                                     act = userData.activities.find((a:any) => a.id == 'yRgnfVYGujFGVqGUntjQ');
                                 else
                                     act = userData.activities.find((a:any) => a.id == 'Hm9afyKMaBLcHmNvlXC3');
-                                console.log(userData)
-                                if(act && !userData.entriesData.entries.find((entry:any) => entry.import_id == e.id)) {
-                                    this.saveActivity(act.id, e.minutes.toFixed(0), act.mets, act.text, e.id);
-                                    numOfImports++;
-                                }
+                            }
+                            else if(e.type == 'Walk') {
+                                 if(e.speed < 9.5) 
+                                    act = userData.activities.find((a:any) => a.id == 'TIpFPTQLGg3MZCDAfODs');
+                                else if(e.speed < 10.5)
+                                    act = userData.activities.find((a:any) => a.id == '1HNXO6jpRxIpIBOVVhw3');
+                                else
+                                    act = userData.activities.find((a:any) => a.id == 'mSUve4vXHS6QO0xtg2mK');
+                            }
+                            else if(e.type == 'Ride')
+                                    act = userData.activities.find((a:any) => a.id == 'YOSIkzBQwwJ85oDaSIhv');
+                            else if(e.type == 'VirtualRide')
+                                    act = userData.activities.find((a:any) => a.id == 'Pv4EQeNd1o668ujQSovi');
+                            else if(e.type == 'Crossfit')
+                                    act = userData.activities.find((a:any) => a.id == 'ilqLsIUT7EDKpQsJtyRl');
+                                
+                            if(act && !userData.entriesData.entries.find((entry:any) => entry.import_id == e.id)) {
+                                this.saveActivity(act.id, e.minutes.toFixed(0), act.mets, act.text, e.id, date);
+                                numOfImports++;
                             }
                         }
                     });
