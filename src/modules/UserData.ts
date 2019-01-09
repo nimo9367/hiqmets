@@ -116,7 +116,7 @@ class UserData {
              return;
             if(u) {
                 self.entriesData.loadedUsersName = u.name;
-                self.entriesData.uid = u.id;
+                self.entriesData.uid = u.uid;
                 self.entriesData.avatar = u.avatar;
             }
             return db.collection('entries')
@@ -181,7 +181,8 @@ class UserData {
             .where('created', '<=', this.challenge.enddate)
             .onSnapshot((entries: any) => {
                 const userObj = {
-                    uid: user.id,
+                    id: user.id,
+                    uid: u.uid,
                     name: u.name,
                     totalTime: 0,
                     totalPoints: 0,
