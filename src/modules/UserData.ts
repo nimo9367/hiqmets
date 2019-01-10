@@ -160,7 +160,8 @@ class UserData {
     }
 
     public statsData = {
-        userStats: <any>[]
+        userStats: <any>[],
+        allEntries: <any>[],
     }
 
     public loadStats(options:any = {}) {
@@ -190,6 +191,7 @@ class UserData {
                     avatar: u.avatar,
                 };
                 stats = stats.filter(x => x.uid !=  user.id);
+                this.statsData.allEntries = this.statsData.allEntries.filter((x:any) => x.user.uid != u.uid);
                 entries.docs.forEach((e: any) => {
                     const entry = e.data();
                     if(options && options.activities && options.activities.length && !options.activities.some((x: any) => x == entry.aid))
@@ -201,6 +203,16 @@ class UserData {
                         userObj.totalPoints += parseInt((entry.minutes * entry.mets).toFixed());
                     if(entry.kcal)
                         userObj.totalKcal += parseInt(entry.kcal);
+                    const act = self.activities.find((x: any) => x.id == entry.aid);
+                    this.statsData.allEntries.push({
+                        eid: e.id,
+                        minutes: entry.minutes,
+                        name: userObj.name,
+                        activity: act.text,
+                        fa: act.fa,
+                        created:  new Date(entry.created.seconds*1000),
+                        user: {avatar: userObj.avatar, uid: userObj.uid}
+                    });
                 });
                 stats.push(userObj);
                 stats.sort((a, b) => b.totalPoints - a.totalPoints );

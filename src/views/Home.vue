@@ -144,8 +144,28 @@
             </div>
           </div>
           
-          <div class="column is-one-quarter" v-if="userData.challenge.enddate > new Date()">
-            <RegisterActivity></RegisterActivity>
+          <div class="column is-one-quarter">
+            <h2 class="content is-medium">Senaste aktiviteter</h2>
+            <div v-for="entry in latestEntries" v-bind:key="entry.id" class="columns is-vcentered has-background-light" style="border-radius: 0.4em; margin: 0.4em 0">
+              <div class="media-left column is-1 has-background-light">
+                  <figure class="image is-32x32" >
+                    <img class="is-rounded" v-bind:src="userData.getAvatarUrl(entry.user)">
+                  </figure>
+              </div>
+              <div class="media-content column auto">
+                <p class="subtitle is-5">{{ entry.name }}</p>
+                <p class="title is-6">
+                  <span class="icon has-text-grey-dark">
+                    <i v-bind:class="entry.fa"></i>
+                  </span>
+                  {{ entry.activity }}
+                </p>
+              </div>
+              <div class="media-content column is-2">
+                <p class="subtitle is-5">{{ entry.minutes }}</p>
+                <p class="title is-7">min</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -195,6 +215,12 @@ export default class Home extends Vue {
   get filteredActivities() {
     return userData.activities.map(x => { return { text: x.text, id: x.id }})
       .filter(x => this.runOnly ? x.text.indexOf('Löpning') == 0 : (this.cycleOnly ? x.text.toLowerCase().indexOf('cykling') != -1 : (this.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.toLowerCase().indexOf('cykling') == -1 : false)));
+  }
+
+  get latestEntries() {
+    const entries = userData.statsData.allEntries;
+    entries.sort((a: any, b:any) => b.created - a.created);
+    return entries.slice(0, 10);
   }
 
   runOnly = false;
