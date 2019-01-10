@@ -31,20 +31,20 @@
                   <nav class="level is-mobile">
                     <div class="level-item  has-text-centered">
                         <div>
-                        <p class="heading">Minuter</p>
-                        <p class="title">{{ userData.entriesData.totalMinutes }}</p>
+                        <p class="heading">Timmar</p>
+                        <p class="title">{{ userData.entriesData.totalMinutes * 1000 * 60 | duration('as', 'hours').toFixed(1) }}</p>
                         </div>
                     </div>
                     <div class="level-item  has-text-centered">
                         <div>
                         <p class="heading">Kcal</p>
-                        <p class="title">{{ userData.entriesData.totalKcal }}</p>
+                        <p class="title" v-kify="userData.entriesData.totalKcal" v-bind:title="userData.entriesData.totalKcal"></p>
                         </div>
                     </div>
                     <div class="level-item  has-text-centered">
                         <div>
                         <p class="heading">Poäng</p>
-                        <p class="title has-text-success">{{ userData.entriesData.totalPoints }}</p>
+                        <p class="title has-text-success" v-kify="userData.entriesData.totalPoints" v-bind:title="userData.entriesData.totalPoints"></p>
                         </div>
                     </div>
                   </nav>

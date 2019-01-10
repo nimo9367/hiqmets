@@ -57,6 +57,12 @@ firebase.auth().onAuthStateChanged((user) => {
   else
     userData.isLoggedIn = false;
 
+
+  // Directives
+  Vue.directive('kify', (el, binding) => {
+    el.innerHTML = binding.value > 1000 ? (binding.value / 1000).toFixed(1) + 'K': binding.value;
+  });
+
   if (!app) {
     /* eslint-disable no-new */
     app = new Vue({

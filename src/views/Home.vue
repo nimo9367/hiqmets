@@ -102,7 +102,7 @@
                     <div class="dropdown is-hoverable">
                       <div class="dropdown-trigger">
                         <a aria-haspopup="true" aria-controls="dropdown-menu4">
-                          <h1>{{ chartType == 'points' ? stats.totalPoints + ' Poäng' : chartType == 'kcal' ? stats.totalKcal + ' Kcal' : stats.totalTime + ' Minuter' }}</h1>
+                          <h1><span v-kify="chartType == 'points' ? stats.totalPoints : chartType == 'kcal' ? stats.totalKcal : stats.totalTime" ></span>{{ chartType == 'points' ? ' Poäng' : chartType == 'kcal' ? ' Kcal' : ' Minuter' }}</h1>
                         </a>
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu4" role="menu">
