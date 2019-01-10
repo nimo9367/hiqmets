@@ -81,7 +81,7 @@
                 </div>
                 <div class="columns is-vcentered is-mobile" v-for="stats in userStats" v-bind:key="stats.uid">
                   <div class="column is-one-fifth has-text-right">
-                    <a href="#"><router-link :to="{ name: 'ActivityList', params: {userId: stats.uid } }">
+                    <a href="#"><router-link :to="{ name: 'ActivityList', params: {userId: stats.id } }">
                       <div class="columns is-vcentered is-mobile">
                         <div class="column">
                           <h1 class="is-vcentered">{{stats.name}}</h1>
@@ -194,7 +194,7 @@ export default class Home extends Vue {
 
   get filteredActivities() {
     return userData.activities.map(x => { return { text: x.text, id: x.id }})
-      .filter(x => this.runOnly ? x.text.indexOf('Löpning') == 0 : (this.cycleOnly ? x.text.indexOf('Cykling') == 0 : (this.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.indexOf('Cykling') == -1 : false)));
+      .filter(x => this.runOnly ? x.text.indexOf('Löpning') == 0 : (this.cycleOnly ? x.text.toLowerCase().indexOf('cykling') != -1 : (this.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.toLowerCase().indexOf('cykling') == -1 : false)));
   }
 
   runOnly = false;
