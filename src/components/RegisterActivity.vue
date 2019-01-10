@@ -64,7 +64,14 @@
                             </b-input>
                         </b-field>
                     </div>
-                    
+                    <b-collapse :open="false">
+                        <a class="is-link-text is-pulled-right" slot="trigger">ändra</a>
+                        <div>
+                            <div class="content">
+                            </div>
+                        </div>
+                    </b-collapse>
+                    <span class="is-pulled-right"><i> {{ datetime | moment("calendar") }} </i></span>
                     <a @click="save" class="button is-primary input">Lägg till</a>
                 </section>
             </div>
