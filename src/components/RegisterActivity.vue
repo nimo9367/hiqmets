@@ -30,6 +30,8 @@
                         <b-datepicker
                             v-bind:disabled="disabled" 
                             v-model="datetime"
+                            :min-date="userData.challenge.startdate"
+                            :max-date="userData.challenge.enddate"
                             placeholder="Click to select..."
                             icon="calendar">
                         </b-datepicker>
@@ -92,6 +94,8 @@ export default class RegisterActivity extends Vue {
         userName: '',
         password: ''
     }
+
+    userData = userData;
 
     data() {
         return {

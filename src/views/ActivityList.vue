@@ -74,7 +74,7 @@
                 </div>
               </div>
             </div>
-            <div class="column is-one-quarter is-mobile">
+            <div class="column is-one-quarter is-mobile" v-if="userData.challenge.enddate > new Date()">
               <RegisterActivity v-bind:disabled="!isLoggedInUser"></RegisterActivity>
             </div>
           </div>

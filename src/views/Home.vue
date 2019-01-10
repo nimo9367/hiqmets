@@ -144,7 +144,7 @@
             </div>
           </div>
           
-          <div class="column  is-one-quarter">
+          <div class="column is-one-quarter" v-if="userData.challenge.enddate > new Date()">
             <RegisterActivity></RegisterActivity>
           </div>
         </div>

@@ -13,7 +13,7 @@
           </router-link>
           </a>
           
-          <div class="navbar-item"  v-if="userData.isLoggedIn">
+          <div class="navbar-item" v-if="userData.isLoggedIn && userData.challenge.enddate > new Date()">
             <b-dropdown>
                 <button class="button is-success is-small" slot="trigger">
                     <b-icon icon="plus-circle"></b-icon>
@@ -46,8 +46,7 @@
             </a>
           </div>
 
-          <div class="navbar-end">
-            
+          <div class="navbar-end" v-if="userData.isLoggedIn">
             <a class="navbar-item has-text-link" @click="importFromStrava">
               <span class="icon is-small">
                 <i class="fab fa-strava"></i>
