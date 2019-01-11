@@ -31,10 +31,20 @@
           <div class="column auto is-mobile">
             <nav class="level is-mobile">
               <p class="level-item has-text-centered">
-                <a class="link is-info" v-bind:class="{'has-text-weight-bold has-text-primary': !runOnly && !cycleOnly && !miscOnly}" @click="filterActivities('')">Alla</a>
+                <a class="link is-info" v-bind:class="{'has-text-weight-bold has-text-primary': !userData.runOnly && !userData.cycleOnly && !userData.miscOnly }" @click="userData.filterActivities('')">
+                  <span class="icon  is-small">
+                  <i class="fas fa-check" v-if="!userData.runOnly && !userData.cycleOnly && !userData.miscOnly"></i>
+                  </span>
+                  Alla
+                </a>
               </p>
               <p class="level-item has-text-centered">
-                <a class="link is-info" v-bind:class="{'has-text-weight-bold has-text-primary': runOnly }" @click="filterActivities('run')">Löpning</a>
+                <a class="link is-info" v-bind:class="{'has-text-weight-bold has-text-primary': userData.runOnly }" @click="userData.filterActivities('run')">
+                  <span class="icon  is-small">
+                    <i class="fas fa-check" v-if="userData.runOnly"></i>
+                  </span>
+                  Löpning
+                  </a>
               </p>
               <p class="level-item has-text-centered">
                 <span class="icon has-text-warning">
@@ -42,10 +52,18 @@
                 </span>
               </p>
               <p class="level-item has-text-centered">
-                <a class="link is-info" @click="filterActivities('cycle')" v-bind:class="{'has-text-weight-bold has-text-primary': cycleOnly }">Cykling</a>
+                <a class="link is-info" @click="userData.filterActivities('cycle')" v-bind:class="{'has-text-weight-bold has-text-primary': userData.cycleOnly }">
+                  <span class="icon  is-small">
+                    <i class="fas fa-check" v-if="userData.cycleOnly"></i>
+                  </span>
+                  Cykling</a>
               </p>
               <p class="level-item has-text-centered">
-                <a class="link is-info" @click="filterActivities('misc')" v-bind:class="{'has-text-weight-bold has-text-primary': miscOnly }">Övriga</a>
+                <a class="link is-info" @click="userData.filterActivities('misc')" v-bind:class="{'has-text-weight-bold has-text-primary': userData.miscOnly }">
+                  <span class="icon  is-small">
+                    <i class="fas fa-check" v-if="userData.miscOnly"></i>
+                  </span>
+                  Övriga</a>
               </p>
             </nav>
             <div class="tags ">
@@ -145,7 +163,7 @@
           </div>
           
           <div class="column is-one-quarter">
-            <h2 class="content is-medium">Senaste aktiviteter</h2>
+            <h2 class="content is-medium"><span>Senaste aktiviteter</span><span class="is-pulled-right">{{ latestEntries.length + '/' + userData.statsData.allEntries.length }}</span></h2>
             <div v-for="entry in latestEntries" v-bind:key="entry.id" class="columns is-vcentered has-background-light" style="border-radius: 0.4em; margin: 0.4em 0">
               <div class="media-left column is-1 has-background-light">
                   <figure class="image is-32x32" >
@@ -153,8 +171,9 @@
                   </figure>
               </div>
               <div class="media-content column auto">
-                <p class="subtitle is-5">{{ entry.name }}</p>
-                <p class="title is-6">
+                <p><router-link :to="{ name: 'ActivityList', params: {userId: entry.user.id } }">{{ entry.name }}</router-link>
+                <span class=" has-text-grey-light is-7"> {{ entry.created | moment("calendar")}}</span></p>
+                <p class="is-6">
                   <span class="icon has-text-grey-dark">
                     <i v-bind:class="entry.fa"></i>
                   </span>
@@ -162,8 +181,8 @@
                 </p>
               </div>
               <div class="media-content column is-2">
-                <p class="subtitle is-5">{{ entry.minutes }}</p>
-                <p class="title is-7">min</p>
+                <p class="subtitle is-5">{{ minuteHour(entry) }}</p>
+                <p class=" title is-7">{{ minuteHourTitle(entry) }}</p>
               </div>
             </div>
           </div>
@@ -214,7 +233,7 @@ export default class Home extends Vue {
 
   get filteredActivities() {
     return userData.activities.map(x => { return { text: x.text, id: x.id }})
-      .filter(x => this.runOnly ? x.text.indexOf('Löpning') == 0 : (this.cycleOnly ? x.text.toLowerCase().indexOf('cykling') != -1 : (this.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.toLowerCase().indexOf('cykling') == -1 : false)));
+      .filter(x => userData.runOnly ? x.text.indexOf('Löpning') == 0 : (userData.cycleOnly ? x.text.toLowerCase().indexOf('cykling') != -1 : (userData.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.toLowerCase().indexOf('cykling') == -1 : false)));
   }
 
   get latestEntries() {
@@ -223,34 +242,13 @@ export default class Home extends Vue {
     return entries.slice(0, 10);
   }
 
-  runOnly = false;
-  cycleOnly = false;
-  miscOnly = false;
-  chartType = 'points'
-
-  filterActivities(filter: string) {
-    if(filter == 'run') {
-      this.runOnly = true;
-      this.cycleOnly = false;
-      this.miscOnly = false;
-    }
-    else if(filter == 'cycle') {
-      this.runOnly = false;
-      this.cycleOnly = true;
-      this.miscOnly = false;
-    }
-    else if(filter == 'misc') {
-      this.runOnly = false;
-      this.cycleOnly = false;
-      this.miscOnly = true;
-    }
-    else {
-      this.runOnly = false;
-      this.cycleOnly = false;
-      this.miscOnly = false;
-    }
-
+  minuteHour(entry: any) {
+    return entry.minutes < 100 ? entry.minutes : (entry.minutes / 60).toFixed(1);
   }
+  minuteHourTitle(entry: any) {
+    return entry.minutes < 100 ? 'min' : 'tim';
+  }
+  chartType = 'points'
 
   @Watch('filteredActivities')
   filterPressed(value: any) {

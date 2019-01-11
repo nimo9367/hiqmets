@@ -6,6 +6,9 @@ class UserData {
     public isLoggedIn: boolean = false;
     public isLoading: boolean = false;
     public user: User = new User();
+    public runOnly = false;
+    public cycleOnly = false;
+    public miscOnly = false;
 
     // TODO: Move this to another shared module
     
@@ -40,6 +43,28 @@ class UserData {
         return db.collection('users').add(user);
     }
 
+    filterActivities(filter: string) {
+        if(filter == 'run') {
+        this.runOnly = true;
+        this.cycleOnly = false;
+        this.miscOnly = false;
+        }
+        else if(filter == 'cycle') {
+        this.runOnly = false;
+        this.cycleOnly = true;
+        this.miscOnly = false;
+        }
+        else if(filter == 'misc') {
+        this.runOnly = false;
+        this.cycleOnly = false;
+        this.miscOnly = true;
+        }
+        else {
+        this.runOnly = false;
+        this.cycleOnly = false;
+        this.miscOnly = false;
+        }
+    }
     
     public getAvatarUrl(u: User) {
         return u.avatar ? u.avatar : 'https://api.adorable.io/avatars/100/' + u.uid + '.png';
@@ -190,7 +215,7 @@ class UserData {
                     totalKcal: 0,
                     avatar: u.avatar,
                 };
-                stats = stats.filter(x => x.uid !=  user.id);
+                stats = stats.filter(x => x.id !=  user.id);
                 this.statsData.allEntries = this.statsData.allEntries.filter((x:any) => x.user.uid != u.uid);
                 entries.docs.forEach((e: any) => {
                     const entry = e.data();
@@ -204,15 +229,17 @@ class UserData {
                     if(entry.kcal)
                         userObj.totalKcal += parseInt(entry.kcal);
                     const act = self.activities.find((x: any) => x.id == entry.aid);
-                    this.statsData.allEntries.push({
-                        eid: e.id,
-                        minutes: entry.minutes,
-                        name: userObj.name,
-                        activity: act.text,
-                        fa: act.fa,
-                        created:  new Date(entry.created.seconds*1000),
-                        user: {avatar: userObj.avatar, uid: userObj.uid}
-                    });
+                    if(act) {
+                        this.statsData.allEntries.push({
+                            eid: e.id,
+                            minutes: entry.minutes,
+                            name: userObj.name,
+                            activity: act.text,
+                            fa: act.fa,
+                            created:  new Date(entry.created.seconds*1000),
+                            user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id}
+                        });
+                    }
                 });
                 stats.push(userObj);
                 stats.sort((a, b) => b.totalPoints - a.totalPoints );

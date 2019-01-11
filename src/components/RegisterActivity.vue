@@ -65,14 +65,32 @@
                         </b-field>
                     </div>
                     <b-collapse :open="false">
-                        <a class="is-link-text is-pulled-right" slot="trigger">ändra</a>
+                        <a class="is-link-text is-pulled-right" slot="trigger">{{ datetime | moment("calendar") }}</a>
                         <div>
                             <div class="content">
+                                <b-field label="Tidpunkt">
+                                    <b-datepicker
+                                        v-bind:disabled="disabled" 
+                                        v-model="datetime"
+                                        :min-date="userData.challenge.startdate"
+                                        :max-date="userData.challenge.enddate"
+                                        placeholder="Click to select..."
+                                        icon="calendar">
+                                    </b-datepicker>
+                                </b-field> 
+                                <b-field>
+                                    <b-timepicker
+                                        v-bind:disabled="disabled" 
+                                        v-model="datetime"
+                                        placeholder="Type or select a date..."
+                                        icon="clock"
+                                        editable>
+                                    </b-timepicker>
+                                </b-field>
                             </div>
                         </div>
                     </b-collapse>
-                    <span class="is-pulled-right"><i> {{ datetime | moment("calendar") }} </i></span>
-                    <a @click="save" class="button is-primary input">Lägg till</a>
+                    <a @click="save" class="button is-primary input" style="margin-top:0.4em">Lägg till</a>
                 </section>
             </div>
         </div>
