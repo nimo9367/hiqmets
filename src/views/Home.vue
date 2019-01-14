@@ -208,9 +208,8 @@
                     <span v-if="entry.likes.length == 2"> annan</span><span v-else> andra</span></span> gillar</span>
                   <span v-else class="has-text-grey-light"><i>Bli först att gilla</i></span>
                 </p>
-                
                 <p class="subtitle is-6">
-                  <span v-for="comment in entry.comments" v-bind:key="comment.created" style="display:block">
+                  <span v-for="comment in entry.comments" v-bind:key="comment.created.seconds" style="display:block">
                     <i class="has-text-grey">{{ userData.getUserName(comment.uid) }}: </i>{{ comment.comment }}
                   </span>
                 </p>

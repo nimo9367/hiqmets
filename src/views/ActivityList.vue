@@ -58,14 +58,30 @@
                   <div class="column is-one-sixth">Poäng</div>
                   <div class="column is-one-sixth"></div>
               </div>
-              <div v-for="entry in pagedEntries" class="columns  is-mobile" v-bind:key="entry.id">
-                  <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
-                  <div class="column is-one-sixth"><span class="tag is-success">{{ entry.activity }}</span></div>
-                  <div class="column is-one-sixth">{{ entry.minutes }}</div>
-                  <div class="column is-one-sixth">{{ entry.kcal }}</div>
-                  <div class="column is-one-sixth has-text-success">{{ entry.points }}</div>
-                  <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
-                  <div v-else class="column is-one-sixth"></div>
+              <div class="column has-background-light" style="border-radius: 0.4em; margin: 0.4em 0px;" v-for="entry in pagedEntries" v-bind:key="entry.id">
+                <div class="columns is-mobile" style="margin-bottom:0">
+                    <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
+                    <div class="column is-one-sixth"><span class="tag is-success"><i v-bind:class="entry.fa"></i>&nbsp;{{ entry.activity }}</span></div>
+                    <div class="column is-one-sixth">{{ entry.minutes }}</div>
+                    <div class="column is-one-sixth">{{ entry.kcal }}</div>
+                    <div class="column is-one-sixth has-text-success">{{ entry.points }}</div>
+                    <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
+                    <div v-else class="column is-one-sixth"></div>
+                </div>
+                <div class="columns">
+                  <div class="column has-text-grey-light">
+                    <span class="icon is-medium">
+                        <i class="fas fa-heart fa-heart-2x"></i>
+                    </span>
+                    <i> Var först med att gilla</i>
+                  </div>
+                  <div class="column has-text-grey-light">
+                    <span class="icon is-medium">
+                        <i class="fas fa-comment fa-comment-2x"></i>
+                    </span>
+                    <i> Lägg till kommentar</i>
+                  </div>
+                </div>
               </div>
               <div class="columns">
                 <div class="column">

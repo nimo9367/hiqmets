@@ -161,12 +161,16 @@ class UserData {
                     const act = self.activities.find((a:any) => a.id == entry.aid);
                     const newEntry = {
                         id: e.id,
+                        eid: e.id,
                         created: entry.created ? entry.created.seconds : '',
                         activity: act ? act.text : '',
                         minutes: entry.minutes,
                         kcal: entry.kcal,
                         points: entry.minutes * entry.mets,
                         import_id: entry.import_id,
+                        likes: entry.likes,
+                        comments: entry.comments,
+                        fa: act.fa
                     };
 
                     if(entry.minutes)
