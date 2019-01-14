@@ -238,7 +238,8 @@ class UserData {
                             fa: act.fa,
                             created:  new Date(entry.created.seconds*1000),
                             user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id},
-                            likes: entry.likes
+                            likes: entry.likes,
+                            comments: entry.comments
                         });
                     }
                 });
@@ -259,6 +260,44 @@ class UserData {
             });
         });
       });
+    }
+
+    public like(entry:any) {
+        let likes = [];
+        if(entry.likes) {
+            const idx = entry.likes.indexOf(this.user.uid);
+            console.log(idx);
+            if(idx >= 0) {
+            likes = entry.likes.filter((x:string) => x != this.user.uid);
+            }
+            else {
+            likes = [this.user.uid].concat(entry.likes);
+            }
+        }
+        else
+            likes = [this.user.uid];
+        db.collection('entries').doc(entry.eid).update({ likes });
+    }
+
+    public getUserName(uid: string) {
+        const u = this.statsData.userStats.find((x:any)=> x.uid == uid);
+        if(u)
+            return u.name;
+        return 'Ny användare';
+
+    }
+
+    public userHasLiked(uids: any[]) {
+        if(uids)
+            return uids.some((x:any) => x === this.user.uid);
+        return false;
+    }
+
+    public saveComment(comment: string, entry: any) {
+        if(!entry.comments)
+            entry.comments = [];
+        entry.comments.push({uid: this.user.uid, comment, created: new Date() });
+        db.collection('entries').doc(entry.eid).update({ comments: entry.comments });
     }
 
     public saveUser() {
