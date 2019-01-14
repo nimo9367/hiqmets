@@ -237,7 +237,8 @@ class UserData {
                             activity: act.text,
                             fa: act.fa,
                             created:  new Date(entry.created.seconds*1000),
-                            user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id}
+                            user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id},
+                            likes: entry.likes
                         });
                     }
                 });

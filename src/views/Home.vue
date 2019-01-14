@@ -172,12 +172,38 @@
               </div>
               <div class="media-content column auto">
                 <p><router-link :to="{ name: 'ActivityList', params: {userId: entry.user.id } }">{{ entry.name }}</router-link>
-                <span class=" has-text-grey-light is-7"> {{ entry.created | moment("calendar")}}</span></p>
+                <span class="title has-text-grey-light is-7"> {{ entry.created | moment("calendar")}}</span></p>
                 <p class="is-6">
                   <span class="icon has-text-grey-dark">
                     <i v-bind:class="entry.fa"></i>
                   </span>
                   {{ entry.activity }}
+                </p>
+                <p class="subtitle is-7">
+                  <a @click="like(entry)">
+                    <span class="icon" v-bind:class="[entry.likes && entry.likes.length ? 'has-text-danger': 'has-text-grey-light']">
+                        <i class="fas fa-heart"></i>
+                    </span>
+                  </a>
+                  <span v-if="entry.likes && entry.likes.length">{{ getUserName(entry.likes[0]) }} <span v-if="entry.likes.length > 1"> och 
+
+                    <div class="dropdown is-hoverable" style="vertical-align: baseline">
+                      <div class="dropdown-trigger">
+                        <a aria-haspopup="true" aria-controls="dropdown-menu4">
+                        {{entry.likes.length-1}}
+                        </a>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                        <div class="dropdown-content">
+                          <div class="dropdown-item">
+                            <span>asdasd</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    andra</span> gillar</span>
+                  <span v-else class="has-text-grey-light"><i>Bli först att gilla</i></span>
                 </p>
               </div>
               <div class="media-content column is-2">
@@ -248,6 +274,32 @@ export default class Home extends Vue {
   minuteHourTitle(entry: any) {
     return entry.minutes < 100 ? 'min' : 'tim';
   }
+
+  like(entry:any) {
+    let likes = [];
+    if(entry.likes) {
+      const idx = entry.likes.indexOf(this.$data.userData.user.uid);
+      console.log(idx);
+      if(idx >= 0) {
+        likes = entry.likes.filter((x:string) => x != this.$data.userData.user.uid);
+      }
+      else {
+        likes = entry.likes.concat([this.$data.userData.user.uid]);
+      }
+    }
+    else
+      likes = [this.$data.userData.user.uid];
+    db.collection('entries').doc(entry.eid).update({ likes });
+  }
+
+  getUserName(uid: string) {
+    const u = this.$data.userData.statsData.userStats.find((x:any)=> x.uid == uid);
+    if(u)
+      return u.name;
+    return 'Unknown';
+
+  }
+
   chartType = 'points'
 
   @Watch('filteredActivities')
