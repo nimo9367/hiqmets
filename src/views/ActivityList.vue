@@ -69,17 +69,35 @@
                     <div v-else class="column is-one-sixth"></div>
                 </div>
                 <div class="columns">
-                  <div class="column has-text-grey-light">
-                    <span class="icon is-medium">
-                        <i class="fas fa-heart fa-heart-2x"></i>
+                  <div class="column is-one-third">
+                    <a @click="userData.like(entry)">
+                      <span class="icon is-medium" v-bind:class="[userData.userHasLiked(entry.likes) ? 'has-text-danger' : 'has-text-grey-light']">
+                          <i class="fas fa-heart fa-heart-2x"></i>
+                      </span>
+                      <i v-if="!entry.likes || !entry.likes.length" class="has-text-grey-light"> Var först med att gilla</i>
+                    </a>
+                    <span v-if="entry.likes && entry.likes.length">
+                      {{ entry.likes.map(like => userData.getUserName(like)).reverse().join(', ') }}
                     </span>
-                    <i> Var först med att gilla</i>
                   </div>
-                  <div class="column has-text-grey-light">
-                    <span class="icon is-medium">
-                        <i class="fas fa-comment fa-comment-2x"></i>
-                    </span>
-                    <i> Lägg till kommentar</i>
+                  <div class="column">
+                    <div class="columns">
+                      <div class="column is-1">
+                        <a @click="comment(entry)" class="has-text-grey-light">
+                          <span class="icon is-medium" v-bind:class="[entry.comments && entry.comments.length? 'has-text-info' : 'has-text-grey-light']">
+                              <i class="fas fa-comment fa-comment-2x"></i>
+                          </span>
+                        </a>
+                      </div>
+                      <div class="column">
+                        <i v-if="!entry.comments || !entry.comments.length"> Lägg till kommentar</i>
+                        <div v-if="entry.comments && entry.comments.length">
+                          <div v-for="comment in entry.comments" v-bind:key="comment.created.seconds">
+                            <i class="has-text-grey-light">{{ userData.getUserName(comment.uid) }}: </i>{{comment.comment}}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -155,6 +173,22 @@ export default class ActivityList extends Vue {
       that.$toast.open('Error removing document: ' + error);
     });
   }
+
+  public comment(entry: any) {
+    this.$dialog.prompt({
+        message: 'Skriv din kommentar',
+        inputAttrs: {
+            placeholder: '',
+            maxlength: 200,
+        },
+        confirmText: 'Skicka',
+        cancelText: 'Avbryt',
+        onConfirm: (comment) => {
+          userData.saveComment(comment, entry);
+        }
+    });
+  }
+
   get isLoggedInUser() {
     return this.$data.userData.user.id === this.$route.params.userId;
   }
