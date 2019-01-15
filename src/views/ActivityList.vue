@@ -111,64 +111,62 @@ Vue.component('RegisterActivity', RegisterActivity);
 @Component
 export default class ActivityList extends Vue {
   self = this;
-  data() {
+  current = 0;
+
+  public data() {
     return {
       name: userData.user.name,
       challenge: userData.challenge,
       userData: userData,
       userId: this.$route.params.userId,
       props: ['userId']
-    }
+    };
   }
 
-  current = 0;
-
-  more() {
-    if(userData.entriesData.entries.length > (this.current + 1) * 10)
+  public more() {
+    if (userData.entriesData.entries.length > (this.current + 1) * 10)
       this.current++;
   }
 
-  less() {
-    if(this.current > 0)
+  public less() {
+    if (this.current > 0)
       this.current--;
   }
 
   get pagedEntries() {
-    return userData.entriesData.entries.slice(this.current * 10, this.current * 10 + 10)
+    return userData.entriesData.entries.slice(this.current * 10, this.current * 10 + 10);
   }
 
-  confirmRemove(id:any) {
-        this.$dialog.confirm({
-            title: 'Ta bort aktivitet',
-            message: 'Är du säker på att du vill <b>ta bort</b> aktivitet? Kan inte ångras.',
-            confirmText: 'Ta bort',
-            type: 'is-danger',
-            hasIcon: true,
-            onConfirm: () => this.remove(id)
-        })
-    }
-  
-  remove(id:any) {
+  public confirmRemove(id: any) {
+      this.$dialog.confirm({
+          title: 'Ta bort aktivitet',
+          message: 'Är du säker på att du vill <b>ta bort</b> aktivitet? Kan inte ångras.',
+          confirmText: 'Ta bort',
+          type: 'is-danger',
+          hasIcon: true,
+          onConfirm: () => this.remove(id)
+      });
+  }
+  public remove(id: any) {
     const that = this;
-    db.collection("entries").doc(id).delete().then(function() {
-      that.$toast.open('Aktivitet borttagen!')
-    }).catch(function(error) {
-      console.error("Error removing document: ", error);
+    db.collection('entries').doc(id).delete().then(() => {
+      that.$toast.open('Aktivitet borttagen!');
+    }).catch((error) => {
+      that.$toast.open('Error removing document: ' + error);
     });
-  } 
-  
+  }
   get isLoggedInUser() {
-    return this.$data.userData.user.id == this.$route.params.userId;
+    return this.$data.userData.user.id === this.$route.params.userId;
   }
 
-  mounted() {
-    if(!userData.challenge.id.length){
+  public mounted() {
+    if (!userData.challenge.id.length) {
       userData.loadChallenges().then(() => {
         userData.loadEntries(this.$route.params.userId);
-      })
-    }
-    else
+      });
+    } else {
         userData.loadEntries(this.$route.params.userId);
+    }
   }
 }
 </script>

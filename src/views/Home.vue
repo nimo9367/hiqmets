@@ -229,7 +229,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import Activities from '@/components/Activities.vue'; // @ is an alias to /src
-import RegisterActivity from '@/components/RegisterActivity.vue'; 
+import RegisterActivity from '@/components/RegisterActivity.vue';
 import firebase from 'firebase';
 import { db, userData } from '../main';
 
@@ -237,55 +237,61 @@ Vue.component('RegisterActivity', RegisterActivity);
 
 @Component
 export default class Home extends Vue {
-  data() {
+  public chartType = 'points';
+
+  public data() {
     return {
       name: userData.user.name,
       challenge: userData.challenge,
-      userData: userData
+      userData,
     };
   }
 
   get userStats() {
-    return userData.statsData.userStats.filter((s:any) => s.totalPoints > 0);
+    return userData.statsData.userStats.filter((s: any) => s.totalPoints > 0);
   }
 
   get total() {
-    if(userData.statsData.userStats.length < 2)
+    if (userData.statsData.userStats.length < 2)
       return 1;
-    var totMinutes = userData.statsData.userStats.map((x:any) => x.totalTime).reduce((a: any, b: any) => a + b);
-    var totKcal = userData.statsData.userStats.map((x:any) => x.totalKcal).reduce((a: any, b: any) => a + b);
+    const totMinutes = userData.statsData.userStats.map((x: any) => x.totalTime).reduce((a: any, b: any) => a + b);
+    const totKcal = userData.statsData.userStats.map((x: any) => x.totalKcal).reduce((a: any, b: any) => a + b);
     return { kcal: totKcal, minutes: totMinutes };
   }
 
   get max() {
-    if(userData.statsData.userStats.length < 2)
+    if (userData.statsData.userStats.length < 2)
       return 1;
-    const max = userData.statsData.userStats.map((x:any) => this.chartType == 'points' ? x.totalPoints : this.chartType == 'kcal' ? x.totalKcal : x.totalTime).reduce((a: any, b: any) => {
+    const max = userData.statsData.userStats.map((x: any) => this.chartType === 'points' ? x.totalPoints
+      : this.chartType === 'kcal' ? x.totalKcal : x.totalTime).reduce((a: any, b: any) => {
         return Math.max(a, b);
     });
     return max > 0 ? max : 1;
   }
 
   get filteredActivities() {
-    return userData.activities.map(x => { return { text: x.text, id: x.id }})
-      .filter(x => userData.runOnly ? x.text.indexOf('Löpning') == 0 : (userData.cycleOnly ? x.text.toLowerCase().indexOf('cykling') != -1 : (userData.miscOnly ? x.text.indexOf('Löpning') == -1 && x.text.toLowerCase().indexOf('cykling') == -1 : false)));
+    return userData.activities.map(x =>  ({ text: x.text, id: x.id })).filter(x =>
+      userData.runOnly ? x.text.indexOf('Löpning') === 0
+      : (userData.cycleOnly ? x.text.toLowerCase().indexOf('cykling') !== -1
+      : (userData.miscOnly ? x.text.indexOf('Löpning') === -1 && x.text.toLowerCase().indexOf('cykling') === -1
+      : false)));
   }
 
   get latestEntries() {
     const entries = userData.statsData.allEntries;
-    entries.sort((a: any, b:any) => b.created - a.created);
+    entries.sort((a: any, b: any) => b.created - a.created);
     return entries.slice(0, 10);
   }
 
-  minuteHour(entry: any) {
+  public minuteHour(entry: any) {
     return entry.minutes < 100 ? entry.minutes : (entry.minutes / 60).toFixed(1);
   }
-  
-  minuteHourTitle(entry: any) {
+
+  public minuteHourTitle(entry: any) {
     return entry.minutes < 100 ? 'min' : 'tim';
   }
 
-  comment(entry: any) {
+  public comment(entry: any) {
     this.$dialog.prompt({
         message: 'Skriv din kommentar',
         inputAttrs: {
@@ -297,18 +303,16 @@ export default class Home extends Vue {
         onConfirm: (comment) => {
           userData.saveComment(comment, entry);
         }
-    })
+    });
   }
 
-  chartType = 'points'
-
   @Watch('filteredActivities')
-  filterPressed(value: any) {
-    userData.loadStats({activities: value.map((x:any) => x.id)});
+  public filterPressed(value: any) {
+    userData.loadStats({activities: value.map((x: any) => x.id)});
   }
 
   @Watch('userData.challenge')
-  callangeChange() {
+  public callangeChange() {
     userData.loadStats();
   }
 }

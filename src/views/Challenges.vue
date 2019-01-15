@@ -65,23 +65,23 @@ import Challenge from '../entities/Challenge';
 
 @Component
 export default class Challenges extends Vue {
-    data() {
+    public data() {
         return {
             challenges: [],
             challenge: null,
-            userData: userData
+            userData
         };
     }
 
-    changeChallenge() {
+    public changeChallenge() {
         userData.user.default_challenge = this.$data.challenge.id;
         userData.saveUser().then(() => userData.loadUser(userData.user));
     }
 
-    beforeMount() {
-        userData.loadChallenges().then((c:Challenge[]) => { 
+    public beforeMount() {
+        userData.loadChallenges().then((c: Challenge[]) => {
             this.$data.challenges = c;
-            this.$data.challenge = c.find((c:Challenge) => c.id == userData.user.default_challenge);
+            this.$data.challenge = c.find((cc: Challenge) => cc.id === userData.user.default_challenge);
         });
     }
 }

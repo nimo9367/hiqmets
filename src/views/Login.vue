@@ -90,7 +90,6 @@
                             self.error = 'Konto inte registrerat.';
                         else
                             self.error = 'Något gick fel. Kontakta admin.';
-                            
                         this.$toast.open({
                             message: 'Något gick snett :(. <br>' + self.error,
                             type: 'is-danger'
@@ -98,22 +97,20 @@
                     },
                 );
             },
-            signInWithGoogle: function() {
-                const provider = new firebase.auth.GoogleAuthProvider()
-                firebase.auth().signInWithRedirect(provider).then((result) => {
-                    console.log(result)
-                }).catch(err => console.log(err))
+            signInWithGoogle: () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithRedirect(provider);
             },
             resetPassword() {
                 const self = this;
-                firebase.auth().sendPasswordResetEmail(this.$data.email).then(function() {
+                firebase.auth().sendPasswordResetEmail(this.$data.email).then(() => {
                     self.$toast.open({
                         message: 'Email skickat',
                         type: 'is-success'
                     });
-                }).catch(function(error) {
+                }).catch((error) => {
                     self.$toast.open({
-                        message: 'Något gick snett: "' + error + "'",
+                        message: 'Något gick snett: ' + error,
                         type: 'is-danger'
                     });
                 });

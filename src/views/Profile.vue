@@ -64,15 +64,15 @@ Vue.component('FileUploader', FileUploader);
 
 @Component
 export default class Profile extends Vue {
-    data() {
-        return { userData: userData };
+    public data() {
+        return { userData };
     }
-    saveUser() {
+    public saveUser() {
         userData.saveUser().then(() => {
-            this.$toast.open('Profil sparad')
+            this.$toast.open('Profil sparad');
         });
     }
-    setImgUrl(imgUrl: string) {
+    public setImgUrl(imgUrl: string) {
         userData.user.avatar = imgUrl;
         this.saveUser();
     }
