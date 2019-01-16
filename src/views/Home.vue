@@ -138,12 +138,12 @@
               <footer class="card-footer">
                 <p class="card-footer-item">
                   <span>
-                    Totalt  <b>{{total.minutes}} </b> Minuter
+                    Totalt  <b>{{ total.minutes * 1000 * 60 | duration('as', 'hours').toFixed(1) }} </b> timmar
                   </span>
                 </p>
                 <p class="card-footer-item">
                   <span>
-                    Totalt  <b>{{total.kcal}} </b> Kcal
+                    Totalt  <b>{{total.kcal}} </b> kcal
                   </span>
                 </p>
               </footer>
@@ -163,7 +163,18 @@
           </div>
           
           <div class="column is-one-third">
-            <h2 class="content is-medium"><span>Senaste aktiviteter</span><span class="is-pulled-right">{{ latestEntries.length + '/' + userData.statsData.allEntries.length }}</span></h2>
+            <h2 class="content is-medium"><span>Senaste aktiviteter</span>
+              <span class="is-pulled-right">
+                <b-pagination
+                    :total="userData.statsData.allEntries.length"
+                    :current.sync="current"
+                    :size="'is-small'"
+                    :rounded="false"
+                    :simple="true"
+                    :per-page="10">
+                </b-pagination>
+              </span>
+            </h2>
             <div v-for="entry in latestEntries" v-bind:key="entry.id" class="columns is-vcentered has-background-light is-mobile" style="border-radius: 0.4em; margin: 0.4em 0">
               <div class="media-left column is-1 has-background-light">
                   <figure class="image is-32x32" >
@@ -238,6 +249,7 @@ Vue.component('RegisterActivity', RegisterActivity);
 @Component
 export default class Home extends Vue {
   public chartType = 'points';
+  public current = 1;
 
   public data() {
     return {
@@ -248,7 +260,9 @@ export default class Home extends Vue {
   }
 
   get userStats() {
-    return userData.statsData.userStats.filter((s: any) => s.totalPoints > 0);
+    const stats = userData.statsData.userStats.filter((s: any) => s.totalPoints > 0);
+    stats.sort((a, b) => this.chartType === 'points' ? b.totalPoints - a.totalPoints : (this.chartType === 'kcal' ? b.totalKcal - a.totalKcal : b.totalTime - a.totalTime));
+    return stats;
   }
 
   get total() {
@@ -280,7 +294,7 @@ export default class Home extends Vue {
   get latestEntries() {
     const entries = userData.statsData.allEntries;
     entries.sort((a: any, b: any) => b.created - a.created);
-    return entries.slice(0, 10);
+    return entries.slice((this.current - 1) * 10, 10 + (this.current - 1) * 10);
   }
 
   public minuteHour(entry: any) {
@@ -308,6 +322,7 @@ export default class Home extends Vue {
 
   @Watch('filteredActivities')
   public filterPressed(value: any) {
+    this.current = 1;
     userData.loadStats({activities: value.map((x: any) => x.id)});
   }
 

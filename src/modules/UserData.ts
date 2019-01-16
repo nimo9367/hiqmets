@@ -170,7 +170,7 @@ class UserData {
                         import_id: entry.import_id,
                         likes: entry.likes,
                         comments: entry.comments,
-                        fa: act.fa
+                        fa: act ? act.fa : ''
                     };
 
                     if(entry.minutes)

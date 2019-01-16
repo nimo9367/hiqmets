@@ -62,9 +62,9 @@
                 <div class="columns is-mobile" style="margin-bottom:0">
                     <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
                     <div class="column is-one-sixth"><span class="tag is-success"><i v-bind:class="entry.fa"></i>&nbsp;{{ entry.activity }}</span></div>
-                    <div class="column is-one-sixth">{{ entry.minutes }}</div>
+                    <div class="column is-one-sixth"><b>{{ entry.minutes }}</b></div>
                     <div class="column is-one-sixth">{{ entry.kcal }}</div>
-                    <div class="column is-one-sixth has-text-success">{{ entry.points }}</div>
+                    <div class="column is-one-sixth has-text-success"><b>{{ entry.points }}</b></div>
                     <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
                     <div v-else class="column is-one-sixth"></div>
                 </div>
@@ -79,8 +79,6 @@
                     <span v-if="entry.likes && entry.likes.length">
                       {{ entry.likes.map(like => userData.getUserName(like)).reverse().join(', ') }}
                     </span>
-                  </div>
-                  <div class="column">
                     <div class="columns">
                       <div class="column is-1">
                         <a @click="comment(entry)" class="has-text-grey-light">
@@ -90,7 +88,7 @@
                         </a>
                       </div>
                       <div class="column">
-                        <i v-if="!entry.comments || !entry.comments.length"> Lägg till kommentar</i>
+                        <i v-if="!entry.comments || !entry.comments.length" class="has-text-grey-light"> Lägg till kommentar</i>
                         <div v-if="entry.comments && entry.comments.length">
                           <div v-for="comment in entry.comments" v-bind:key="comment.created.seconds">
                             <i class="has-text-grey-light">{{ userData.getUserName(comment.uid) }}: </i>{{comment.comment}}

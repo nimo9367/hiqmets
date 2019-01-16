@@ -45,8 +45,7 @@
                                         name="challengeSelect"
                                         v-bind:value="c"
                                         v-model="challenge"
-                                        v-on:change="changeChallenge"
-                                        v-bind:checked="c.id ==  userData.user.default_challenge">
+                                        v-on:change="changeChallenge">
                                 <label v-bind:for="c.id"> Välj</label>
                             </a>
                         </footer>
