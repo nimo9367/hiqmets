@@ -97,14 +97,14 @@
                     </nav>
                   </div>
                 </div>
-                <div class="columns is-vcentered is-mobile" v-for="stats in userStats" v-bind:key="stats.uid">
+                <div class="columns is-2 is-variable is-vcentered is-mobile" v-for="stats in userStats" v-bind:key="stats.uid">
                   <div class="column is-one-fifth has-text-right">
                     <a href="#"><router-link :to="{ name: 'ActivityList', params: {userId: stats.id } }">
                       <div class="columns is-vcentered is-mobile">
                         <div class="column">
                           <h1 class="is-vcentered">{{stats.name}}</h1>
                         </div>
-                        <div class="column is-narrow  is-hidden-mobile">
+                        <div class="column is-narrow is-hidden-mobile">
                           <figure class="image is-32x32" >
                             <img class="is-rounded" v-bind:src="userData.getAvatarUrl(stats)">
                           </figure>
@@ -113,7 +113,7 @@
                       </router-link>
                     </a>
                   </div>
-                  <div class="column is-three-fifth">
+                  <div class="column auto">
                       <progress class="progress is-large" v-bind:class="[chartType == 'points' ? 'is-primary' : chartType == 'kcal' ? 'is-danger' : 'is-warning']" v-bind:value="((chartType == 'points' ? stats.totalPoints : chartType == 'kcal' ? stats.totalKcal : stats.totalTime) / max) * 100" max="100">100%</progress>
                   </div>
                   <div class="column is-one-fifth">
@@ -261,7 +261,7 @@ export default class Home extends Vue {
 
   get userStats() {
     const stats = userData.statsData.userStats.filter((s: any) => s.totalPoints > 0);
-    stats.sort((a, b) => this.chartType === 'points' ? b.totalPoints - a.totalPoints : (this.chartType === 'kcal' ? b.totalKcal - a.totalKcal : b.totalTime - a.totalTime));
+    stats.sort((a: any, b: any) => this.chartType === 'points' ? b.totalPoints - a.totalPoints : (this.chartType === 'kcal' ? b.totalKcal - a.totalKcal : b.totalTime - a.totalTime));
     return stats;
   }
 
