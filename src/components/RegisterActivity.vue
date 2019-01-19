@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </b-collapse>
-                    <a @click="save" class="button is-primary input" style="margin-top:0.4em">Lägg till</a>
+                    <a @click="save" class="button is-primary input" style="margin-top:0.4em">Lägg till {{ userData.selectedActivity.mets * minutes }} poäng</a>
                 </section>
             </div>
         </div>
