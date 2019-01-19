@@ -12,12 +12,12 @@
           
           <div class="navbar-item" v-if="userData.isLoggedIn && userData.challenge.enddate > new Date()">
             <b-dropdown>
-                <button class="button is-success is-small" slot="trigger">
+                <button class="button is-success is-small" slot="trigger" @click="updateTime">
                     <b-icon icon="plus-circle"></b-icon>
                     <span>Aktivitet</span>
                 </button>
                 <b-dropdown-item custom paddingless>
-                  <RegisterActivity v-bind:quickAdd="true"></RegisterActivity>
+                  <RegisterActivity v-bind:quickAdd="true" v-bind:newDateTime="newDateTime"></RegisterActivity>
                 </b-dropdown-item>
             </b-dropdown>
           </div>
@@ -90,7 +90,8 @@
               userData: userData,
               burgerActive: false,
               stravaImporter: stravaImporter,
-              version: require('../package.json').version
+              version: require('../package.json').version,
+              newDateTime: new Date()
           };
       },
       methods: {
@@ -107,6 +108,9 @@
               message: 'Just nu stöds bara import från <b>Strava</b>. Vill du fortsätta?',
               onConfirm: () => stravaImporter.authorize()
           })
+        },
+        updateTime() {
+          this.$data.newDateTime = new Date();
         }
       }
   };

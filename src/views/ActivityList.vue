@@ -50,7 +50,7 @@
                   </nav>
                 </div>
               </div>
-              <div class="columns heading is-mobile">
+              <div class="columns heading is-mobile has-text-centered">
                   <div class="column is-one-sixth">Datum</div>
                   <div class="column is-one-sixth">Aktivitet</div>
                   <div class="column is-one-sixth">Minuter</div>
@@ -59,19 +59,24 @@
                   <div class="column is-one-sixth"></div>
               </div>
               <div class="column has-background-light" style="border-radius: 0.4em; margin: 0.4em 0px;" v-for="entry in pagedEntries" v-bind:key="entry.id">
-                <div class="columns is-mobile" style="margin-bottom:0">
-                    <div class="column is-one-sixth "><time>{{ entry.created | moment("calendar")  }}</time></div>
-                    <div class="column is-one-sixth"><span class="tag is-success"><i v-bind:class="entry.fa"></i>&nbsp;{{ entry.activity }}</span></div>
-                    <div class="column is-one-sixth"><b>{{ entry.minutes }}</b></div>
-                    <div class="column is-one-sixth">{{ entry.kcal }}</div>
-                    <div class="column is-one-sixth has-text-success"><b>{{ entry.points }}</b></div>
+                <div class="columns is-mobile has-text-centered" style="margin-bottom:0">
+                    <div class="column is-one-sixth has-text-left"><time>{{ entry.created | moment("calendar")  }}</time></div>
+                    <div class="column is-one-sixth"><span class="tag is-success"><i v-bind:class="entry.fa"></i><span class="is-hidden-mobile">&nbsp;{{ entry.activity }}</span></span></div>
+                    <div class="column is-one-sixth has-text-centered"><span class="title is-5">{{ entry.minutes }}</span></div>
+                    <div class="column is-one-sixth"><span class="title is-5">{{ entry.kcal }}</span></div>
+                    <div class="column is-one-sixth"><span class="title is-5 has-text-success">{{ entry.points }}</span></div>
                     <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
                     <div v-else class="column is-one-sixth"></div>
                 </div>
                 <div class="columns">
                   <div class="column is-one-third">
+                    <a @click="comment(entry)" class="has-text-grey-light">
+                      <span class="icon is-medium" v-bind:class="[entry.comments && entry.comments.length? 'has-text-info' : 'has-text-grey-light']">
+                          <i class="fas fa-comment fa-comment-2x"></i>
+                      </span>
+                    </a>
                     <a @click="userData.like(entry)">
-                      <span class="icon is-medium" v-bind:class="[userData.userHasLiked(entry.likes) ? 'has-text-danger' : 'has-text-grey-light']">
+                      <span class="icon is-medium" v-bind:class="[entry.likes && entry.likes.length ? (userData.userHasLiked(entry.likes) ? 'has-text-danger' : 'liked') : 'has-text-grey-light']">
                           <i class="fas fa-heart fa-heart-2x"></i>
                       </span>
                       <i v-if="!entry.likes || !entry.likes.length" class="has-text-grey-light"> Var först med att gilla</i>
@@ -80,15 +85,7 @@
                       {{ entry.likes.map(like => userData.getUserName(like)).reverse().join(', ') }}
                     </span>
                     <div class="columns">
-                      <div class="column is-1">
-                        <a @click="comment(entry)" class="has-text-grey-light">
-                          <span class="icon is-medium" v-bind:class="[entry.comments && entry.comments.length? 'has-text-info' : 'has-text-grey-light']">
-                              <i class="fas fa-comment fa-comment-2x"></i>
-                          </span>
-                        </a>
-                      </div>
                       <div class="column">
-                        <i v-if="!entry.comments || !entry.comments.length" class="has-text-grey-light"> Lägg till kommentar</i>
                         <div v-if="entry.comments && entry.comments.length">
                           <div v-for="comment in entry.comments" v-bind:key="comment.created.seconds">
                             <i class="has-text-grey-light">{{ userData.getUserName(comment.uid) }}: </i>{{comment.comment}}

@@ -171,7 +171,7 @@
                     :size="'is-small'"
                     :rounded="false"
                     :simple="true"
-                    :per-page="10">
+                    :per-page="20">
                 </b-pagination>
               </span>
             </h2>
@@ -188,7 +188,7 @@
                   <span class="icon has-text-grey-dark">
                     <i v-bind:class="entry.fa"></i>
                   </span>
-                  {{ entry.activity }}
+                 {{ minuteHour(entry) }} {{ minuteHourTitle(entry) }} {{ entry.activity }} 
                 </p>
                 <p class="subtitle is-7" style="margin: 0">
                   <a @click="comment(entry)">
@@ -197,7 +197,7 @@
                     </span>
                   </a>
                   <a @click="userData.like(entry)">
-                    <span class="icon" v-bind:class="[userData.userHasLiked(entry.likes) ? 'has-text-danger': 'has-text-grey-light']">
+                    <span class="icon" v-bind:class="[entry.likes && entry.likes.length ? (userData.userHasLiked(entry.likes) ? 'has-text-danger' : 'liked') : 'has-text-grey-light']">
                         <i class="fas fa-heart"></i>
                     </span>
                   </a>
@@ -226,8 +226,8 @@
                 </p>
               </div>
               <div class="media-content column is-2">
-                <p class="subtitle is-5"><b>{{ minuteHour(entry) }}</b></p>
-                <p class=" title is-7">{{ minuteHourTitle(entry) }}</p>
+                <p class="subtitle is-5  has-text-centered " v-bind:style="getPointColor(entry.points)"><b>{{ entry.points.toFixed(0) }}</b></p>
+                <p class="title is-7 has-text-centered" v-bind:style="getPointColor(entry.points)">poäng</p>
               </div>
             </div>
           </div>
@@ -294,7 +294,7 @@ export default class Home extends Vue {
   get latestEntries() {
     const entries = userData.statsData.allEntries;
     entries.sort((a: any, b: any) => b.created - a.created);
-    return entries.slice((this.current - 1) * 10, 10 + (this.current - 1) * 10);
+    return entries.slice((this.current - 1) * 20, 20 + (this.current - 1) * 20);
   }
 
   public minuteHour(entry: any) {
@@ -318,6 +318,14 @@ export default class Home extends Vue {
           userData.saveComment(comment, entry);
         }
     });
+  }
+
+  public getPointColor(points: number)
+  {
+    const hsl = 'hsl(0, 0%, @value%)';
+    const percent = points / 600;
+    const value = 90 - (90 * percent);
+    return { color: hsl.replace('@value', value.toString()) };
   }
 
   @Watch('filteredActivities')

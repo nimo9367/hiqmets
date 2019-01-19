@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import firebase from 'firebase';
 import { db, userData } from '../main';
 import Activities from '@/components/Activities.vue';
@@ -107,7 +107,7 @@ import Entry from '@/entities/Entry';
 
 Vue.component('Activities', Activities);
 
-@Component({props: ['disabled', 'quickAdd']})
+@Component({props: ['disabled', 'quickAdd', 'newDateTime']})
 export default class RegisterActivity extends Vue {
     name = 'RegisterActivity';
     minutes = null;
@@ -164,7 +164,6 @@ export default class RegisterActivity extends Vue {
         const stravaCode = this.$route.query.code;
         if(!stravaCode)
             return;
-        console.log('mounted')
         stravaImporter.doImport(<string>stravaCode).then(entries => {
             if(this.$props.quickAdd)
                 return;
@@ -234,6 +233,11 @@ export default class RegisterActivity extends Vue {
     }
     importData() {
         stravaImporter.authorize();
+    }
+
+    @Watch ('$props.newDateTime')
+    newDateChange() {
+        this.$data.datetime = this.$props.newDateTime
     }
 }
 </script>

@@ -9,6 +9,7 @@ class UserData {
     public runOnly = false;
     public cycleOnly = false;
     public miscOnly = false;
+    public chartType = 'points';
 
     // TODO: Move this to another shared module
     
@@ -240,8 +241,9 @@ class UserData {
                             name: userObj.name,
                             activity: act.text,
                             fa: act.fa,
-                            created:  new Date(entry.created.seconds*1000),
+                            created:  new Date(entry.created.seconds * 1000),
                             user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id},
+                            points: entry.minutes * entry.mets,
                             likes: entry.likes,
                             comments: entry.comments
                         });
