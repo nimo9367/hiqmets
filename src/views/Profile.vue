@@ -52,14 +52,20 @@
                 </div>
             </div>
         </form>
+        <button class="button" @click="generateStats">
+            Generera veckostatistik
+        </button>
       </div>
     </div>
   </div>  
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { userData } from '../main';
+import { userData, db } from '../main';
 import FileUploader from '@/components/FileUploader.vue';
+import moment from 'moment';
+const _ = require('lodash');
+
 Vue.component('FileUploader', FileUploader);
 
 @Component
@@ -75,6 +81,52 @@ export default class Profile extends Vue {
     public setImgUrl(imgUrl: string) {
         userData.user.avatar = imgUrl;
         this.saveUser();
+    }
+
+    public generateStats() {
+        var startdate = moment(userData.challenge.startdate).toDate();
+        var enddate = moment(userData.challenge.startdate).add(7, 'd').toDate();
+        db.collection('entries')
+            .where('cid', '==', userData.challenge.id)
+            .where('created', '>=', startdate)
+            .where('created', '<=', enddate)
+            .orderBy("created", "desc").get().then((entries) => {
+                
+                let userGroups = _.values(_.groupBy(entries.docs.map(x => x.data()), 'uid'));
+                const stats = <any>[];
+                userGroups.forEach((group: any) => {
+                    const userStats = <any>{};
+                    userStats.uid = group[0].uid;
+                    userStats.points = _.sumBy(group, (e: any) => e.mets * e.minutes);
+                    userStats.kcal =  _.sumBy(group, (e: any) => parseFloat(e.kcal));
+                    userStats.minutes =  _.sumBy(group, (e: any) => parseFloat(e.minutes));
+                    userStats.variation =  _.values(_.groupBy(group, 'aid')).length;
+                    userStats.numberOfActs =  group.length;
+                    userStats.longestAct = _.maxBy(group, (a: any) => parseFloat(a.minutes));
+                    stats.push(userStats);
+                });
+
+                debugger;
+                let winner = _.take(_.orderBy(stats, 'points', 'desc'), 3);
+                let winnerKcal = _.take(_.orderBy(stats, 'kcal', 'desc'), 3);
+                let winnerMinutes = _.take(_.orderBy(stats, 'minutes', 'desc'), 3);
+                let winnerVariation = _.take(_.orderBy(stats, 'variation', 'desc'), 3);
+                let winnerNumberOfActs = _.take(_.orderBy(stats, 'numberOfActs', 'desc'), 3);
+                let winnerLongestAct = _.take(_.orderBy(stats,  (s:any) => parseFloat(s.longestAct.minutes), 'desc'), 3);
+
+                // Vinnare v.X
+                // Flest kcal
+                // Flest minuter
+                // Störst variation
+                // Flest reggade aktiviteter 
+                // Längsta pass
+
+                // Populäraste aktivitet
+                // Aktivitet med mest poäng
+                // Aktivitet med mest tid
+                // Aktivitet med högst förbränning
+                
+            });
     }
 }
 </script>
