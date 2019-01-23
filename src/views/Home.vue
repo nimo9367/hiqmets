@@ -28,6 +28,17 @@
     <div class="container">
       <div class="section">
         <div class="columns">
+          <div class="column auto">
+            <h1 class="title">Spurtvinnare</h1>
+            <b-table :data="userData.weeklyStats" :columns="columns"></b-table>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column auto">
+            <h1 class="title">Total ställning</h1>
+          </div>
+        </div>
+        <div class="columns">
           <div class="column auto is-mobile">
             <nav class="level is-mobile">
               <p class="level-item has-text-centered">
@@ -243,6 +254,7 @@ import Activities from '@/components/Activities.vue'; // @ is an alias to /src
 import RegisterActivity from '@/components/RegisterActivity.vue';
 import firebase from 'firebase';
 import { db, userData } from '../main';
+const _ = require('lodash');
 
 Vue.component('RegisterActivity', RegisterActivity);
 
@@ -327,6 +339,42 @@ export default class Home extends Vue {
     const value = 90 - (90 * percent);
     return { color: hsl.replace('@value', value.toString()) };
   }
+
+  // --------------
+    tabledata = <any>[];
+    columns = [
+        {
+            field: 'week',
+            label: 'Vecka',
+            width: '40',
+        },
+        {
+            field: 'w',
+            label: 'Vinnare totalt',
+            renderHtml: true
+        },
+        {
+            field: 'wkcal',
+            label: 'Kcal',
+            renderHtml: true
+        },
+        {
+            field: 'wminutes',
+            label: 'Minuter',
+            renderHtml: true
+        },
+        {
+            field: 'wnumberofacts',
+            label: 'Antal aktiviteter',
+            renderHtml: true
+        },
+        {
+            field: 'winnervariation',
+            label: 'Störst variation',
+            renderHtml: true
+        }
+    ]
+  //  ------------
 
   @Watch('filteredActivities')
   public filterPressed(value: any) {

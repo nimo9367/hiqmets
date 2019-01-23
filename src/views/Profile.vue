@@ -84,14 +84,14 @@ export default class Profile extends Vue {
     }
 
     public generateStats() {
-        var startdate = moment(userData.challenge.startdate).toDate();
-        var enddate = moment(userData.challenge.startdate).add(7, 'd').toDate();
+        const week = 1
+        var startdate = moment(userData.challenge.startdate).add(7 * (week - 1), 'd').toDate();
+        var enddate = moment(userData.challenge.startdate).add(7 * week, 'd').toDate();
         db.collection('entries')
             .where('cid', '==', userData.challenge.id)
             .where('created', '>=', startdate)
             .where('created', '<=', enddate)
             .orderBy("created", "desc").get().then((entries) => {
-                
                 let userGroups = _.values(_.groupBy(entries.docs.map(x => x.data()), 'uid'));
                 const stats = <any>[];
                 userGroups.forEach((group: any) => {
@@ -106,7 +106,6 @@ export default class Profile extends Vue {
                     stats.push(userStats);
                 });
 
-                debugger;
                 let winner = _.take(_.orderBy(stats, 'points', 'desc'), 3);
                 let winnerKcal = _.take(_.orderBy(stats, 'kcal', 'desc'), 3);
                 let winnerMinutes = _.take(_.orderBy(stats, 'minutes', 'desc'), 3);
@@ -114,6 +113,85 @@ export default class Profile extends Vue {
                 let winnerNumberOfActs = _.take(_.orderBy(stats, 'numberOfActs', 'desc'), 3);
                 let winnerLongestAct = _.take(_.orderBy(stats,  (s:any) => parseFloat(s.longestAct.minutes), 'desc'), 3);
 
+
+                const completeStats = <any>[];
+                let placement = 1;
+                winner.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winner',
+                        value: w.points,
+                        week: week,
+                        uid: w.uid
+                    });
+                    placement++;
+                });
+                placement = 1;
+
+                winnerKcal.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winnerkcal',
+                        value: w.kcal,
+                        week: week,
+                        uid: w.uid
+                    });
+                    placement++;
+                });
+                placement = 1;
+
+                winnerMinutes.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winnerminutes',
+                        value: w.minutes,
+                        week: week,
+                        uid: w.uid
+                    });
+                    placement++;
+                });
+                placement = 1;
+
+                winnerVariation.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winnervariation',
+                        value: w.variation,
+                        week: week,
+                        uid: w.uid
+                    });
+                    placement++;
+                });
+                placement = 1;
+
+                winnerNumberOfActs.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winnernumberofacts',
+                        value: w.numberOfActs,
+                        week: week,
+                        uid: w.uid
+                    });
+                    placement++;
+                });
+                placement = 1;
+                
+                winnerLongestAct.forEach((w: any) => {
+                    completeStats.push({
+                        place: placement,
+                        type: 'winnerlongestact',
+                        value: parseFloat(w.longestAct.minutes),
+                        week: week,
+                        uid: w.uid,
+                        metadata: w.longestAct.aid
+                    });
+                    placement++;
+                });
+                placement = 1;
+
+                completeStats.forEach((d: any) => {
+                    db.collection('stats').add(d);
+                });
                 // Vinnare v.X
                 // Flest kcal
                 // Flest minuter
