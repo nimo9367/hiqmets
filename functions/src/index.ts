@@ -47,15 +47,10 @@ function recalculate(uid: string, cid: string, skipEmpty = false) {
     });
 }
 
-exports.addedEntry = functions.firestore.document('entries/{eid}').onWrite((snap, context) => {
-    console.log("New entry. Recreating stats...")
-    let entry = snap.after.data();
-    return recalculate(entry.uid, entry.cid);
-});
-
-exports.removeEntry = functions.firestore.document('entries/{eid}').onDelete((snap, context) => {
-    console.log("Removed entry. Recreating stats...")
-    let entry = snap.data();
+exports.changedEntry = functions.firestore.document('entries/{eid}').onWrite((change, context) => {
+    console.log("Entry change. Recreating stats...")
+    let entry = change.after.exists ? change.after.data() : change.before.data();
+    console.log('Recreate uid: ' + entry.uid + ' cid:' + entry.cid);
     return recalculate(entry.uid, entry.cid);
 });
 
