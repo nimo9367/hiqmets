@@ -12,6 +12,7 @@ class UserData {
     public miscOnly = false;
     public chartType = 'points';
     public weeklyStats = <any>[];
+    public users = <any>[];
 
     // TODO: Move this to another shared module
     
@@ -119,7 +120,11 @@ class UserData {
                     this.challenge.startdate = new Date(data.startdate.seconds*1000);
                     this.challenge.enddate = new Date(data.enddate.seconds*1000);
                     this.challenge.countDown();
-                    this.loadStats();
+                    this.loadUsers(this.user.default_challenge).then(() => {
+                        this.loadLatestEntries();
+                        this.loadStats();
+                        this.loadWeeklyStats();
+                    });
                 });
             }
         });
@@ -196,84 +201,100 @@ class UserData {
         allEntries: <any>[],
     }
 
-    public loadStats(options:any = {}) {
-      const self: any = this;
-      this.isLoading = true;
-      db.collection('users').get().then(users => {
-        let stats: any[] = [];
-        users.docs.forEach(user => {
-          const u = user.data();
-          const cid = this.user.default_challenge;
-          if(!cid || !u)
-            return;
-          return db.collection('entries')
-            .where('uid', '==', u.uid)
+    public loadLatestEntries(options:any = {}) {
+        const cid = this.user.default_challenge;
+        return db.collection('entries')
             .where('cid', '==', cid)
             .orderBy("created", "desc")
             .where('created', '>=', this.challenge.startdate)
             .where('created', '<=', this.challenge.enddate)
+            .limit(100)
             .onSnapshot((entries: any) => {
-                const userObj = {
-                    id: user.id,
-                    uid: u.uid,
-                    name: u.name,
-                    totalTime: 0,
-                    totalPoints: 0,
-                    totalKcal: 0,
-                    avatar: u.avatar,
-                };
-                stats = stats.filter(x => x.id !=  user.id);
-                this.statsData.allEntries = this.statsData.allEntries.filter((x:any) => x.user.uid != u.uid);
+                let allEntries = <any>[];
                 entries.docs.forEach((e: any) => {
                     const entry = e.data();
                     if(options && options.activities && options.activities.length && !options.activities.some((x: any) => x == entry.aid))
                         return;
-                    if(entry.minutes)
-                        userObj.totalTime += parseInt(entry.minutes);
-                    
-                    if(entry.minutes && entry.mets)
-                        userObj.totalPoints += parseInt((entry.minutes * entry.mets).toFixed());
-                    if(entry.kcal)
-                        userObj.totalKcal += parseInt(entry.kcal);
-                    const act = self.activities.find((x: any) => x.id == entry.aid);
+                    const act = this.activities.find((x: any) => x.id == entry.aid);
                     if(act) {
-                        this.statsData.allEntries.push({
-                            eid: e.id,
-                            minutes: entry.minutes,
-                            name: userObj.name,
-                            activity: act.text,
-                            fa: act.fa,
-                            created:  new Date(entry.created.seconds * 1000),
-                            user: {avatar: userObj.avatar, uid: userObj.uid, id: userObj.id},
-                            points: entry.minutes * entry.mets,
-                            likes: entry.likes,
-                            comments: entry.comments
-                        });
+                        const user = this.getUser(entry.uid);
+                        if(user) {
+                            allEntries.push({
+                                eid: e.id,
+                                minutes: entry.minutes,
+                                name: user.name,
+                                activity: act.text,
+                                fa: act.fa,
+                                created:  new Date(entry.created.seconds * 1000),
+                                user: { avatar: user.avatar, uid: user.uid, id: user.id },
+                                points: entry.minutes * entry.mets,
+                                likes: entry.likes,
+                                comments: entry.comments
+                            });
+                        }
                     }
                 });
-                stats.push(userObj);
-                stats.sort((a, b) => b.totalPoints - a.totalPoints );
-                if(stats.length > 1) {
-                    for(let i = 1; i < stats.length; i++) {
-                        let prev = stats[i - 1];
-                        let pointDiff = prev.totalPoints - stats[i].totalPoints;
+                this.statsData.allEntries = allEntries;
+                this.isLoading = false;
+            });
+    }
+    
+    public loadUsers(cid: string) {
+        return db.collection('users')
+            .where('default_challenge', '==', cid)
+            .get().then(data => { 
+                const users = <any>[];
+                data.forEach((doc: any) => {
+                    users.push(doc.data());
+                });
+                this.users = users;
+            });
+    }
+
+    public loadStats(options:any = {}) {
+        this.isLoading = true;
+        let allStats: any[] = [];
+        const cid = this.user.default_challenge;
+        return db.collection('user_stats')
+            .where('cid', '==', cid)
+            .onSnapshot((snap: any) => {
+                snap.forEach((s:any) => {
+                    const stats = s.data();
+                    const user = this.getUser(stats.uid);
+                    allStats = allStats.filter((old) => old.uid != user.uid);
+                    const statsObj = {
+                        id: user.id,
+                        uid: user.uid,
+                        name: user.name,
+                        totalTime: stats.totalMinutes,
+                        totalPoints: stats.totalPoints,
+                        totalKcal: stats.totalKcal,
+                        avatar: user.avatar,
+                    };
+                    allStats.push(statsObj);
+                });
+                allStats.sort((a, b) => b.totalPoints - a.totalPoints );
+                if(allStats.length > 1) {
+                    for(let i = 1; i < allStats.length; i++) {
+                        let prev = allStats[i - 1];
+                        let pointDiff = prev.totalPoints - allStats[i].totalPoints;
                         let runMins = (pointDiff / 11.5).toFixed(0);
                         let bettanMins = (pointDiff / 9.5).toFixed(0);
                         let walkMins = (pointDiff / 3.8).toFixed(0);
-                        stats[i].nextPositionText = '<b>' + runMins + '</b> minuter <b>löpning</b> 5.5 min/km, <b>' + bettanMins + '</b> minuter <b>bettanpass</b> eller <b>' + walkMins + '</b> minuter <b>promenad</b> i rask takt för att gå om <b>' + prev.name + '</b>';
+                        allStats[i].nextPositionText = '<b>' + runMins + '</b> minuter <b>löpning</b> 5.5 min/km, <b>' + bettanMins + '</b> minuter <b>bettanpass</b> eller <b>' + walkMins + '</b> minuter <b>promenad</b> i rask takt för att gå om <b>' + prev.name + '</b>';
                     }
                 }
-                this.statsData.userStats = stats;
+                this.statsData.userStats = allStats;
                 this.isLoading = false;
             });
-        });
-        
-        this.loadWeeklyStats();
-      });
+            
     }
 
     public loadWeeklyStats() {
-        db.collection('stats').get().then(stats => {
+        const cid = this.user.default_challenge;
+        db.collection('stats')
+            /*.where('cid', '==', cid)*/
+            .get().then(stats => {
             let data = _.groupBy(stats.docs.map((s: any) => s.data()), 'week');
             this.weeklyStats = [];
             let icon1 = '<span class="icon has-text-warning"><i class="fas fa-trophy"></i></span>';
@@ -335,11 +356,16 @@ class UserData {
     }
 
     public getUserName(uid: string) {
-        const u = this.statsData.userStats.find((x:any)=> x.uid == uid);
+        const u = this.users.find((x:any)=> x.uid == uid);
         if(u)
             return u.name;
         return 'Ny användare';
 
+    }
+
+    public getUser(uid: string) {
+        const u = this.users.find((x:any)=> x.uid == uid);
+        return u;
     }
 
     public userHasLiked(uids: any[]) {
