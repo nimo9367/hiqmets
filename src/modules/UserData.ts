@@ -12,6 +12,7 @@ class UserData {
     public miscOnly = false;
     public chartType = 'points';
     public weeklyStats = <any>[];
+    public showAllLapStats = false;
 
     // TODO: Move this to another shared module
     
@@ -279,10 +280,12 @@ class UserData {
             let icon1 = '<span class="icon has-text-warning"><i class="fas fa-trophy"></i></span>';
             let icon2 = '<span class="icon has-text-grey-light"><i class="fas fa-medal"></i></span>';
             let icon3 = '<span class="icon has-text-bronze"><i class="fas fa-medal"></i></span>';
+            let numOfWeeks = Object.keys(data).length;
             for(let week in data)
             {
                 if(data.hasOwnProperty(week))
                 {
+                    const isLastWeek = numOfWeeks === parseInt(week) || this.showAllLapStats;
                     let winner = _.sortBy(data[week].filter((s: any) => s.type == 'winner'), 'place');
                     let winnerkcal = _.sortBy(data[week].filter((s: any) => s.type == 'winnerkcal'), 'place');
                     let winnerlongestact = _.sortBy(data[week].filter((s: any) => s.type == 'winnerlongestact'), 'place');
@@ -290,28 +293,33 @@ class UserData {
                     let winnernumberofacts = _.sortBy(data[week].filter((s: any) => s.type == 'winnernumberofacts'), 'place');
                     let winnervariation = _.sortBy(data[week].filter((s: any) => s.type == 'winnervariation'), 'place');
                     let row = {
-                        week: week,
+                        week: '<h2 class="subtitle">' + (isLastWeek ? '<b>' + week + '</b>' : week) + '</h2>',
                         w: '<ul><li>' + icon1 + '<b>' + this.getUserName(winner[0].uid) + ' (' + winner[0].value + ' poäng)</b></li>' +
-                        '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winner[1].uid) + ' (' + winner[1].value + ' poäng)</li>' +
-                        '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winner[2].uid) + ' (' + winner[2].value + ' poäng)</li></ul>',
+                        (isLastWeek ? 
+                            '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winner[1].uid) + ' (' + winner[1].value + ' poäng)</li>' +
+                            '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winner[2].uid) + ' (' + winner[2].value + ' poäng)</li>' : '' + '</ul>'),
                         
                         wkcal: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnerkcal[0].uid) + ' (' + winnerkcal[0].value + ' kcal)</b></li>' +
-                        '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerkcal[1].uid) + ' (' + winnerkcal[1].value + ' kcal)</li>' +
-                        '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerkcal[2].uid) + ' (' + winnerkcal[2].value + ' kcal)</li></ul>',
+                        (isLastWeek ? 
+                            '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerkcal[1].uid) + ' (' + winnerkcal[1].value + ' kcal)</li>' +
+                            '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerkcal[2].uid) + ' (' + winnerkcal[2].value + ' kcal)</li>' : '' + '</ul>'),
                         
                         wminutes: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnerminutes[0].uid) + ' (' + winnerminutes[0].value + ' min)</b></li>' +
-                        '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerminutes[1].uid) + ' (' + winnerminutes[1].value + ' min)</li>' +
-                        '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerminutes[2].uid) + ' (' + winnerminutes[2].value + ' min)</li></ul>',
+                        (isLastWeek ? 
+                            '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerminutes[1].uid) + ' (' + winnerminutes[1].value + ' min)</li>' +
+                            '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerminutes[2].uid) + ' (' + winnerminutes[2].value + ' min)</li>' : '' + '</ul>'),
                         
                         wnumberofacts: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnernumberofacts[0].uid) + ' (' + winnernumberofacts[0].value + ' st)</b></li>' +
-                        '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnernumberofacts[1].uid) + ' (' + winnernumberofacts[1].value + ' st)</li>' +
-                        '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnernumberofacts[2].uid) + ' (' + winnernumberofacts[2].value + ' st)</li></ul>',
+                        (isLastWeek ? 
+                            '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnernumberofacts[1].uid) + ' (' + winnernumberofacts[1].value + ' st)</li>' +
+                            '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnernumberofacts[2].uid) + ' (' + winnernumberofacts[2].value + ' st)</li>' : '' + '</ul>'),
                         
                         winnervariation: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnervariation[0].uid) + ' (' + winnervariation[0].value + ' st)</b></li>' +
-                        '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnervariation[1].uid) + ' (' + winnervariation[1].value + ' st)</li>' +
-                        '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnervariation[2].uid) + ' (' + winnervariation[2].value + ' st)</li></ul>'
+                        (isLastWeek ? 
+                            '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnervariation[1].uid) + ' (' + winnervariation[1].value + ' st)</li>' +
+                            '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnervariation[2].uid) + ' (' + winnervariation[2].value + ' st)</li>' : '' + '</ul>')
                     }
-                    this.weeklyStats.push(row);
+                    this.weeklyStats.unshift(row);
                 }
             }
         });

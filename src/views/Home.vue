@@ -262,12 +262,13 @@ Vue.component('RegisterActivity', RegisterActivity);
 export default class Home extends Vue {
   public chartType = 'points';
   public current = 1;
+  public showAllLaps = false;
 
   public data() {
     return {
       name: userData.user.name,
       challenge: userData.challenge,
-      userData,
+      userData
     };
   }
 
@@ -340,6 +341,10 @@ export default class Home extends Vue {
     return { color: hsl.replace('@value', value.toString()) };
   }
 
+  public toggleAllLaps() {
+    this.showAllLaps = !this.showAllLaps;
+  }
+
   // --------------
     tabledata = <any>[];
     columns = [
@@ -347,6 +352,8 @@ export default class Home extends Vue {
             field: 'week',
             label: 'Vecka',
             width: '40',
+            renderHtml: true,
+            centered: true
         },
         {
             field: 'w',
@@ -356,7 +363,7 @@ export default class Home extends Vue {
         {
             field: 'wkcal',
             label: 'Kcal',
-            renderHtml: true
+            renderHtml: true  
         },
         {
             field: 'wminutes',

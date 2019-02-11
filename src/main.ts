@@ -44,10 +44,6 @@ const config = {
 firebase.initializeApp(config);
 export const db = firebase.firestore();
 export const userData = new UserData();
-const settings = {
-  timestampsInSnapshots: true,
-};
-db.settings(settings);
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     userData.isLoggedIn = true;
