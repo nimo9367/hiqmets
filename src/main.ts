@@ -4,10 +4,12 @@ import router from './router';
 import firebase from 'firebase';
 import UserData from './modules/UserData';
 import Buefy from 'buefy';
+import VueAnalytics from 'vue-analytics';
 import 'buefy/dist/buefy.css';
 require('./static/style.css');
 export const moment = require('moment');
 export const countdown = require('countdown')
+
 
 
 countdown.setLabels(
@@ -28,6 +30,10 @@ Vue.use(require('vue-moment'), {
     moment
 });
 
+Vue.use(VueAnalytics, {
+  id: 'UA-132318891-1'
+});
+
 Vue.config.productionTip = true;
 Vue.config.devtools = true;
 
@@ -43,6 +49,8 @@ const config = {
 };
 firebase.initializeApp(config);
 export const db = firebase.firestore();
+const settings = { timestampsInSnapshots: true };
+db.settings(settings);
 export const userData = new UserData();
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {

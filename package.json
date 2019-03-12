@@ -22,6 +22,7 @@
     "firebase-functions": "^2.1.0",
     "strava-v3": "^1.14.0",
     "vue": "^2.5.17",
+    "vue-analytics": "^5.16.4",
     "vue-class-component": "^6.0.0",
     "vue-lodash": "^2.0.0",
     "vue-material-design-icons": "^2.5.0",

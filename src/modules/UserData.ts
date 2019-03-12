@@ -1,6 +1,7 @@
 import { db, countdown } from '../main';
 import User from './User';
 import Challenge from '../entities/Challenge';
+import { event } from 'vue-analytics';
 const _ = require('lodash');
 
 class UserData {
@@ -80,8 +81,10 @@ class UserData {
         var uid = user.uid;
         db.collection('users').where('uid', '==', uid).get().then(snapshot => {
 
+            event('user', 'loadUser', 'loading', uid);
             if(snapshot.empty)
             {
+                event('user', 'loadUser', 'createUser', uid);
                 // Authenticated but no user. Probably SSO with google or FB
                 if(user.providerData && user.providerData.length)
                 {
@@ -347,15 +350,15 @@ class UserData {
     }
     
     public like(entry:any) {
-        let likes = [];
+        let likes = <string[]>[];
         if(entry.likes) {
             const idx = entry.likes.indexOf(this.user.uid);
             console.log(idx);
             if(idx >= 0) {
-            likes = entry.likes.filter((x:string) => x != this.user.uid);
+                likes = entry.likes.filter((x:string) => x != this.user.uid);
             }
             else {
-            likes = [this.user.uid].concat(entry.likes);
+                likes = [this.user.uid].concat(entry.likes);
             }
         }
         else
