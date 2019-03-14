@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import firebase from 'firebase';
+import { firebase } from '@firebase/app';
+import '@firebase/firestore';
+import '@firebase/auth';
 import UserData from './modules/UserData';
 import Buefy from 'buefy';
 import VueAnalytics from 'vue-analytics';
@@ -48,11 +50,9 @@ const config = {
   messagingSenderId: '915954119',
 };
 firebase.initializeApp(config);
-export const db = firebase.firestore();
-const settings = { timestampsInSnapshots: true };
-db.settings(settings);
+export const db = firebase.firestore!();
 export const userData = new UserData();
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth!().onAuthStateChanged((user) => {
   if (user) {
     userData.isLoggedIn = true;
     userData.loadUser(user);

@@ -183,7 +183,7 @@ export default class RegisterActivity extends Vue {
                         let date = new Date(e.start_date);
                         console.log(e.type)
                         if(date > userData.challenge.startdate && date < userData.challenge.enddate) {
-                            let act =  null;
+                            let act: any = null;
                             if(e.type == 'Run') {
                                 if(e.speed < 4.3) 
                                     act = userData.activities.find((a:any) => a.id == 'GoVsauDModSzhqsvlRt8');
