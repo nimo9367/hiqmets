@@ -12,6 +12,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "noImplicitThis": true,
+    "noImplicitAny":  false,
     "types": [
       "webpack-env"
     ],
