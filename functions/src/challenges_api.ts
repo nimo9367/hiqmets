@@ -3,12 +3,20 @@ import { firestore } from "firebase-admin";
 var db = firestore();
 
 export const getChallanges =  functions.https.onRequest(async (req, res) => {
-    const  result = await db.collection('challenges').get().then(snap => snap.docs.map(x => x.data()));
-    res.status(200).send(result);
+   const  result = await db.collection('challenges').get().then(snap => snap.docs.map(doc => { 
+      let challange = doc.data();
+      challange.id = doc.id;
+      return challange;
+   }));
+   res.status(200).send(result);
  });
 
  export const getChallange = functions.https.onRequest(async (req, res) => {
     const cid = req.query.cid;
-    const  result = await db.collection('challenges').doc(cid).get().then(snap => snap.data());
+    const  result = await db.collection('challenges').doc(cid).get().then(snap => {
+      let challange = snap.data();
+      challange.id = snap.id;
+      return challange;
+    });
     res.status(200).send(result);
  });
