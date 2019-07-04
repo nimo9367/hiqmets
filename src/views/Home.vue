@@ -279,20 +279,20 @@ export default class Home extends Vue {
   }
 
   get total() {
-    if (userData.statsData.userStats.length < 2)
+    if (userData.statsData.userStats.length < 1)
       return 1;
-    const totMinutes = userData.statsData.userStats.map((x: any) => x.totalTime).reduce((a: any, b: any) => a + b);
-    const totKcal = userData.statsData.userStats.map((x: any) => x.totalKcal).reduce((a: any, b: any) => a + b);
+    const totMinutes = userData.statsData.userStats.map((x: any) => x.totalTime).reduce((a: any, b: any) => a + b, 0);
+    const totKcal = userData.statsData.userStats.map((x: any) => x.totalKcal).reduce((a: any, b: any) => a + b, 0);
     return { kcal: totKcal, minutes: totMinutes };
   }
 
   get max() {
-    if (userData.statsData.userStats.length < 2)
+    if (userData.statsData.userStats.length < 1)
       return 1;
     const max = userData.statsData.userStats.map((x: any) => this.chartType === 'points' ? x.totalPoints
       : this.chartType === 'kcal' ? x.totalKcal : x.totalTime).reduce((a: any, b: any) => {
         return Math.max(a, b);
-    });
+    }, 0);
     return max > 0 ? max : 1;
   }
 
