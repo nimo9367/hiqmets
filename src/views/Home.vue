@@ -27,7 +27,7 @@
     </div>
     <div class="container">
       <div class="section">
-        <div class="columns">
+        <div v-if="userData.weeklyStats.length" class="columns">
           <div class="column auto">
             <h1 class="title">Spurtvinnare</h1>
             <b-table :data="userData.weeklyStats" :columns="columns"></b-table>
@@ -149,7 +149,7 @@
               <footer class="card-footer">
                 <p class="card-footer-item">
                   <span>
-                    Totalt  <b>{{ total.minutes * 1000 * 60 | duration('as', 'hours').toFixed(1) }} </b> timmar
+                    Totalt  <b>{{ total.minutes * 1000 * 60 | duration('as', 'hours') | toDecimals(1) }} </b> timmar
                   </span>
                 </p>
                 <p class="card-footer-item">
@@ -280,7 +280,7 @@ export default class Home extends Vue {
 
   get total() {
     if (userData.statsData.userStats.length < 1)
-      return 1;
+      return { kcal: 0, minutes: 0 };
     const totMinutes = userData.statsData.userStats.map((x: any) => x.totalTime).reduce((a: any, b: any) => a + b, 0);
     const totKcal = userData.statsData.userStats.map((x: any) => x.totalKcal).reduce((a: any, b: any) => a + b, 0);
     return { kcal: totKcal, minutes: totMinutes };

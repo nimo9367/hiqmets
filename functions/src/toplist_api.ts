@@ -16,7 +16,7 @@ export const getToplist = functions.https.onRequest(async (req, res) => {
     .get()
     .then(snap =>
         snap.docs.map(doc => {
-        let entry = doc.data();
+        const entry = doc.data();
         entry.id = doc.id;
         return entry;
         })

@@ -51,24 +51,24 @@ class UserData {
 
     filterActivities(filter: string) {
         if(filter == 'run') {
-        this.runOnly = true;
-        this.cycleOnly = false;
-        this.miscOnly = false;
+            this.runOnly = true;
+            this.cycleOnly = false;
+            this.miscOnly = false;
         }
         else if(filter == 'cycle') {
-        this.runOnly = false;
-        this.cycleOnly = true;
-        this.miscOnly = false;
+            this.runOnly = false;
+            this.cycleOnly = true;
+            this.miscOnly = false;
         }
         else if(filter == 'misc') {
-        this.runOnly = false;
-        this.cycleOnly = false;
-        this.miscOnly = true;
+            this.runOnly = false;
+            this.cycleOnly = false;
+            this.miscOnly = true;
         }
         else {
-        this.runOnly = false;
-        this.cycleOnly = false;
-        this.miscOnly = false;
+            this.runOnly = false;
+            this.cycleOnly = false;
+            this.miscOnly = false;
         }
     }
     
@@ -315,30 +315,34 @@ class UserData {
                     let winnerminutes = _.sortBy(data[week].filter((s: any) => s.type == 'winnerminutes'), 'place');
                     let winnernumberofacts = _.sortBy(data[week].filter((s: any) => s.type == 'winnernumberofacts'), 'place');
                     let winnervariation = _.sortBy(data[week].filter((s: any) => s.type == 'winnervariation'), 'place');
+                    if(!winner.length || !winner[0] || !this.getUserName(winner[0].uid))
+                        return;
+                    console.log(winner[0]);
+                    console.log(winner[0].uid);
                     let row = {
                         week: '<h2 class="subtitle">' + (isLastWeek ? '<b>' + week + '</b>' : week) + '</h2>',
                         w: '<ul><li>' + icon1 + '<b>' + this.getUserName(winner[0].uid) + ' (' + winner[0].value + ' poäng)</b></li>' +
-                        (isLastWeek ? 
+                        (isLastWeek && winner.length > 2 ? 
                             '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winner[1].uid) + ' (' + winner[1].value + ' poäng)</li>' +
                             '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winner[2].uid) + ' (' + winner[2].value + ' poäng)</li>' : '' + '</ul>'),
                         
                         wkcal: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnerkcal[0].uid) + ' (' + winnerkcal[0].value + ' kcal)</b></li>' +
-                        (isLastWeek ? 
+                        (isLastWeek && winner.length > 2 ? 
                             '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerkcal[1].uid) + ' (' + winnerkcal[1].value + ' kcal)</li>' +
                             '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerkcal[2].uid) + ' (' + winnerkcal[2].value + ' kcal)</li>' : '' + '</ul>'),
                         
                         wminutes: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnerminutes[0].uid) + ' (' + winnerminutes[0].value + ' min)</b></li>' +
-                        (isLastWeek ? 
+                        (isLastWeek && winner.length > 2 ? 
                             '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnerminutes[1].uid) + ' (' + winnerminutes[1].value + ' min)</li>' +
                             '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnerminutes[2].uid) + ' (' + winnerminutes[2].value + ' min)</li>' : '' + '</ul>'),
                         
                         wnumberofacts: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnernumberofacts[0].uid) + ' (' + winnernumberofacts[0].value + ' st)</b></li>' +
-                        (isLastWeek ? 
+                        (isLastWeek && winner.length > 2 ? 
                             '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnernumberofacts[1].uid) + ' (' + winnernumberofacts[1].value + ' st)</li>' +
                             '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnernumberofacts[2].uid) + ' (' + winnernumberofacts[2].value + ' st)</li>' : '' + '</ul>'),
                         
                         winnervariation: '<ul><li>' + icon1 + '<b>' + this.getUserName(winnervariation[0].uid) + ' (' + winnervariation[0].value + ' st)</b></li>' +
-                        (isLastWeek ? 
+                        (isLastWeek && winner.length > 2 ? 
                             '<li class="has-text-grey">' + icon2 + '' + this.getUserName(winnervariation[1].uid) + ' (' + winnervariation[1].value + ' st)</li>' +
                             '<li class="has-text-grey">' + icon3 + '' + this.getUserName(winnervariation[2].uid) + ' (' + winnervariation[2].value + ' st)</li>' : '' + '</ul>')
                     }

@@ -44,7 +44,7 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
             .where('created', '>=', admin.firestore.Timestamp.fromDate(startdate))
             .where('created', '<=', admin.firestore.Timestamp.fromDate(enddate))
             .orderBy("created", "desc").get().then((entries) => {
-                let userGroups = _.values(_.groupBy(entries.docs.map(x => x.data()), 'uid'));
+                const userGroups = _.values(_.groupBy(entries.docs.map(x => x.data()), 'uid'));
                 const stats = <any>[];
                 userGroups.forEach((group: any) => {
                     const userStats = <any>{};
@@ -205,7 +205,7 @@ function recalculate(uid: string, cid: string, skipEmpty = false) {
                     totalNumber
                 }
                 if(stats.totalPoints)
-                    return db.collection('user_stats').doc(uid).set(stats);
+                    return db.collection('user_stats').doc(uid + '_' + cid).set(stats);
                 return null;
         });
     });

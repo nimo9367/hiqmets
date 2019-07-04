@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/api/getActivities", 
+        "function": "getActivities"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

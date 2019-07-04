@@ -6,6 +6,9 @@ class Challenge {
     startdate: Date = new Date();
     enddate: Date = new Date();
     countDownStr: string = '';
+    activities: string[] = [];
+    isPublic: boolean = true;
+    uid: string = '';
 
     public status()
     {
@@ -30,6 +33,17 @@ class Challenge {
             else 
                 self.countDownStr = 'Börjar om: ' + countdown(self.startdate).toString();
         }, 1000);
+    }
+    public toPOCO() {
+        return {
+            name: this.name,
+            description: this.description,
+            startdate: this.startdate,
+            enddate: this.enddate,
+            activities: this.activities,
+            isPublic: this.isPublic,
+            uid: this.uid
+        }
     }
 }
 export default Challenge;

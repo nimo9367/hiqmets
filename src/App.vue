@@ -79,7 +79,8 @@
   </section>
 </template>
 <script>
-  import firebase from 'firebase';
+  import { firebase } from '@firebase/app';
+  import '@firebase/auth';
   import { userData } from './main';
   import stravaImporter from './modules/StravaImporter';
 

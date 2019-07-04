@@ -32,7 +32,7 @@
                     <div class="level-item  has-text-centered">
                         <div>
                         <p class="heading">Timmar</p>
-                        <p class="title">{{ userData.entriesData.totalMinutes * 1000 * 60 | duration('as', 'hours').toFixed(1) }}</p>
+                        <p class="title">{{ userData.entriesData.totalMinutes * 1000 * 60 | duration('as', 'hours') | toDecimals(1) }}</p>
                         </div>
                     </div>
                     <div class="level-item  has-text-centered">

@@ -1,0 +1,1 @@
+export const functionsBaseUrl = "https://outch.work/api/";

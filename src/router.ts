@@ -8,6 +8,7 @@ import SignUp from './views/SignUp.vue';
 import ActivityList from './views/ActivityList.vue';
 import Profile from './views/Profile.vue';
 import Challenges from './views/Challenges.vue';
+import CreateChallenge from './views/CreateChallange.vue';
 
 Vue.use(Router);
 
@@ -54,6 +55,14 @@ const router = new Router({
       path: '/challenges/',
       name: 'Challenges',
       component: Challenges,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/createchallenge/',
+      name: 'CreateChallenge',
+      component: CreateChallenge,
       meta: {
         requiresAuth: true,
       },

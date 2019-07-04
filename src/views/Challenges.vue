@@ -52,6 +52,7 @@
                     </div>
                 </div>
             </div>
+            <a href="#/createchallenge" class="button is-primary">Skapa ny</a>
         </section>
     </div>
   </div>  

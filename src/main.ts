@@ -12,8 +12,6 @@ require('./static/style.css');
 export const moment = require('moment');
 export const countdown = require('countdown')
 
-
-
 countdown.setLabels(
   ' millisekund| sekund| minut| timme| dag| vecka| månad| år| decennium| 100 år| millennium',
   ' millisekunder| sekunder| minuter| timmar| dagar| veckor| månader| år| decennium| 100 år| millennia',
@@ -39,6 +37,10 @@ Vue.use(VueAnalytics, {
 Vue.config.productionTip = true;
 Vue.config.devtools = true;
 
+Vue.filter('toDecimals', (value, decimals) => {
+  return value.toFixed(decimals)
+})
+
 // Initialize Firebase
 let app: any;
 const config = {
@@ -56,7 +58,6 @@ firebase.auth!().onAuthStateChanged((user) => {
   if (user) {
     userData.isLoggedIn = true;
     userData.loadUser(user);
-    
   }
   else
     userData.isLoggedIn = false;
