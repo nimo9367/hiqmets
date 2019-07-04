@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
 import { firestore } from "firebase-admin";
-var db = firestore();
+const db = firestore();
 
 export const getChallanges =  functions.https.onRequest(async (req, res) => {
    const  result = await db.collection('challenges').get().then(snap => snap.docs.map(doc => { 
-      let challange = doc.data();
+      const challange = doc.data();
       challange.id = doc.id;
       return challange;
    }));
@@ -14,7 +14,7 @@ export const getChallanges =  functions.https.onRequest(async (req, res) => {
  export const getChallange = functions.https.onRequest(async (req, res) => {
     const cid = req.query.cid;
     const  result = await db.collection('challenges').doc(cid).get().then(snap => {
-      let challange = snap.data();
+      const challange = snap.data();
       challange.id = snap.id;
       return challange;
     });

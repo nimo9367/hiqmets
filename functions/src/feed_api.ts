@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import { firestore } from "firebase-admin";
-var db = firestore();
+const db = firestore();
 
 export const getFeed = functions.https.onRequest(async (req, res) => {
     console.log(req.query);
@@ -22,7 +22,7 @@ export const getFeed = functions.https.onRequest(async (req, res) => {
         .get()
         .then(snap =>
             snap.docs.map(doc => {
-                let entry = doc.data();
+                const entry = doc.data();
                 entry.id = doc.id;
                 return entry;
             })

@@ -291,13 +291,12 @@ class UserData {
                 this.statsData.userStats = allStats;
                 this.isLoading = false;
             });
-            
     }
 
     public loadWeeklyStats() {
         const cid = this.user.default_challenge;
         db.collection('stats')
-            /*.where('cid', '==', cid)*/
+            .where('cid', '==', cid)
             .get().then(stats => {
             let data = _.groupBy(stats.docs.map((s: any) => s.data()), 'week');
             this.weeklyStats = [];

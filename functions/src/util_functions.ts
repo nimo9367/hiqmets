@@ -3,13 +3,13 @@ import * as admin from 'firebase-admin';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-var db = admin.firestore();
+const db = admin.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
 export const changedEntry = functions.firestore.document('entries/{eid}').onWrite((change, context) => {
     console.log("Entry change. Recreating stats...")
-    let entry = change.after.exists ? change.after.data() : change.before.data();
+    const entry = change.after.exists ? change.after.data() : change.before.data();
     console.log('Recreate uid: ' + entry.uid + ' cid:' + entry.cid);
     return recalculate(entry.uid, entry.cid);
 });
@@ -58,12 +58,12 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                     stats.push(userStats);
                 });
 
-                let winner = _.take(_.orderBy(stats, 'points', 'desc'), 3);
-                let winnerKcal = _.take(_.orderBy(stats, 'kcal', 'desc'), 3);
-                let winnerMinutes = _.take(_.orderBy(stats, 'minutes', 'desc'), 3);
-                let winnerVariation = _.take(_.orderBy(stats, 'variation', 'desc'), 3);
-                let winnerNumberOfActs = _.take(_.orderBy(stats, 'numberOfActs', 'desc'), 3);
-                let winnerLongestAct = _.take(_.orderBy(stats,  (s:any) => parseFloat(s.longestAct.minutes), 'desc'), 3);
+                const winner = _.take(_.orderBy(stats, 'points', 'desc'), 3);
+                const winnerKcal = _.take(_.orderBy(stats, 'kcal', 'desc'), 3);
+                const winnerMinutes = _.take(_.orderBy(stats, 'minutes', 'desc'), 3);
+                const winnerVariation = _.take(_.orderBy(stats, 'variation', 'desc'), 3);
+                const winnerNumberOfActs = _.take(_.orderBy(stats, 'numberOfActs', 'desc'), 3);
+                const winnerLongestAct = _.take(_.orderBy(stats,  (s:any) => parseFloat(s.longestAct.minutes), 'desc'), 3);
 
                 const completeStats = <any>[];
                 let placement = 1;
@@ -73,7 +73,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         type: 'winner',
                         value: w.points,
                         week: week,
-                        uid: w.uid
+                        uid: w.uid,
+                        cid: cid
                     });
                     placement++;
                 });
@@ -85,7 +86,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         type: 'winnerkcal',
                         value: w.kcal,
                         week: week,
-                        uid: w.uid
+                        uid: w.uid,
+                        cid: cid
                     });
                     placement++;
                 });
@@ -97,7 +99,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         type: 'winnerminutes',
                         value: w.minutes,
                         week: week,
-                        uid: w.uid
+                        uid: w.uid,
+                        cid: cid
                     });
                     placement++;
                 });
@@ -109,7 +112,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         type: 'winnervariation',
                         value: w.variation,
                         week: week,
-                        uid: w.uid
+                        uid: w.uid,
+                        cid: cid
                     });
                     placement++;
                 });
@@ -121,7 +125,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         type: 'winnernumberofacts',
                         value: w.numberOfActs,
                         week: week,
-                        uid: w.uid
+                        uid: w.uid,
+                        cid: cid
                     });
                     placement++;
                 });
@@ -134,7 +139,8 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
                         value: parseFloat(w.longestAct.minutes),
                         week: week,
                         uid: w.uid,
-                        metadata: w.longestAct.aid
+                        metadata: w.longestAct.aid,
+                        cid: cid
                     });
                     placement++;
                 });

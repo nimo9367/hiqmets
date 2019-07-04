@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import { firestore } from "firebase-admin";
-var db = firestore();
+const db = firestore();
 
 export const getActivities = functions.https.onRequest(async (req, res) => {
     const result = await db
@@ -8,7 +8,7 @@ export const getActivities = functions.https.onRequest(async (req, res) => {
         .get()
         .then(snap =>
             snap.docs.map(doc => {
-                let activity = doc.data();
+                const activity = doc.data();
                 activity.id = doc.id;
                 return activity;
             })

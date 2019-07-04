@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import { firestore } from "firebase-admin";
-var db = firestore();
+const db = firestore();
 
 export const getUsers = functions.https.onRequest(async (req, res) => {
     console.log(req.query);
