@@ -2,6 +2,8 @@ import { db, countdown } from '../main';
 import User from './User';
 import Challenge from '../entities/Challenge';
 import { event } from 'vue-analytics';
+import Axios from 'axios';
+import { functionsBaseUrl } from '../globals';
 const _ = require('lodash');
 
 class UserData {
@@ -38,6 +40,8 @@ class UserData {
                 c.description = data.description;
                 c.startdate = new Date(data.startdate.seconds*1000);
                 c.enddate = new Date(data.enddate.seconds*1000);
+                c.uid = data.uid;
+                c.activities = data.activities;
                 cs.push(c);
             });
             return cs;
@@ -171,28 +175,30 @@ class UserData {
                 entries.docs.forEach((e: any) => {
                     const entry = e.data();
                     const act = self.activities.find((a:any) => a.id == entry.aid);
-                    const newEntry = {
-                        id: e.id,
-                        eid: e.id,
-                        created: entry.created ? entry.created.seconds : '',
-                        activity: act ? act.text : '',
-                        minutes: entry.minutes,
-                        kcal: entry.kcal,
-                        points: entry.minutes * entry.mets,
-                        import_id: entry.import_id,
-                        likes: entry.likes,
-                        comments: entry.comments,
-                        fa: act ? act.fa : ''
-                    };
+                    if(act) {
+                        const newEntry = {
+                            id: e.id,
+                            eid: e.id,
+                            created: entry.created ? entry.created.seconds : '',
+                            activity: act.text,
+                            minutes: entry.minutes,
+                            kcal: entry.kcal,
+                            points: entry.minutes * entry.mets,
+                            import_id: entry.import_id,
+                            likes: entry.likes,
+                            comments: entry.comments,
+                            fa: act.fa
+                        };
 
-                    if(entry.minutes)
-                        self.entriesData.totalMinutes += parseInt(entry.minutes);
-                    if(newEntry.kcal)
-                        self.entriesData.totalKcal += parseInt(newEntry.kcal);
-                    if(newEntry.points)
-                        self.entriesData.totalPoints += parseInt(newEntry.points.toFixed(0));
+                        if(entry.minutes)
+                            self.entriesData.totalMinutes += parseInt(entry.minutes);
+                        if(newEntry.kcal)
+                            self.entriesData.totalKcal += parseInt(newEntry.kcal);
+                        if(newEntry.points)
+                            self.entriesData.totalPoints += parseInt(newEntry.points.toFixed(0));
 
-                    stats.push(newEntry);
+                        stats.push(newEntry);
+                    }
                 });
                 self.entriesData.entries = stats;
                 self.isLoading = false;
@@ -205,8 +211,10 @@ class UserData {
         allEntries: <any>[],
     }
 
-    public loadLatestEntries(options:any = {}) {
+    public async loadLatestEntries(options:any = {}) {
         const cid = this.user.default_challenge;
+        console.log(cid);
+        const activities = await Axios.get(functionsBaseUrl + "activities/" + cid);
         return db.collection('entries')
             .where('cid', '==', cid)
             .orderBy("created", "desc")
@@ -219,7 +227,7 @@ class UserData {
                     const entry = e.data();
                     if(options && options.activities && options.activities.length && !options.activities.some((x: any) => x == entry.aid))
                         return;
-                    const act = this.activities.find((x: any) => x.id == entry.aid);
+                    const act = activities.data.find((x: any) => x.id == entry.aid);
                     if(act) {
                         const user = this.getUser(entry.uid);
                         if(user) {
@@ -239,6 +247,7 @@ class UserData {
                     }
                 });
                 this.statsData.allEntries = allEntries;
+                console.log(this.statsData.allEntries);
                 this.isLoading = false;
             });
     }
@@ -317,8 +326,7 @@ class UserData {
                     let winnervariation = _.sortBy(data[week].filter((s: any) => s.type == 'winnervariation'), 'place');
                     if(!winner.length || !winner[0] || !this.getUserName(winner[0].uid))
                         return;
-                    console.log(winner[0]);
-                    console.log(winner[0].uid);
+
                     let row = {
                         week: '<h2 class="subtitle">' + (isLastWeek ? '<b>' + week + '</b>' : week) + '</h2>',
                         w: '<ul><li>' + icon1 + '<b>' + this.getUserName(winner[0].uid) + ' (' + winner[0].value + ' poäng)</b></li>' +
@@ -356,7 +364,6 @@ class UserData {
         let likes = <string[]>[];
         if(entry.likes) {
             const idx = entry.likes.indexOf(this.user.uid);
-            console.log(idx);
             if(idx >= 0) {
                 likes = entry.likes.filter((x:string) => x != this.user.uid);
             }

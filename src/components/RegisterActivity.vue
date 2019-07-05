@@ -99,7 +99,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import firebase from 'firebase';
 import { db, userData } from '../main';
 import Activities from '@/components/Activities.vue';
 import stravaImporter from '../modules/StravaImporter';
@@ -179,9 +178,7 @@ export default class RegisterActivity extends Vue {
                 setTimeout(() => {
                     let numOfImports = 0;
                     entries.forEach((e:any) => {
-                        console.log(e);
                         let date = new Date(e.start_date);
-                        console.log(e.type)
                         if(date > userData.challenge.startdate && date < userData.challenge.enddate) {
                             let act: any = null;
                             if(e.type == 'Run') {

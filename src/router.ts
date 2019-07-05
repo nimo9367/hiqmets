@@ -44,7 +44,7 @@ const router = new Router({
       },
     },
     {
-      path: '/profile/',
+      path: '/profile',
       name: 'Profile',
       component: Profile,
       meta: {
@@ -60,7 +60,7 @@ const router = new Router({
       },
     },
     {
-      path: '/createchallenge/',
+      path: '/createchallenge/:cid?',
       name: 'CreateChallenge',
       component: CreateChallenge,
       meta: {

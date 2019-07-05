@@ -116,7 +116,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RegisterActivity from '@/components/RegisterActivity.vue'; 
-import firebase from 'firebase';
 import { db, userData } from '../main';
 
 Vue.component('RegisterActivity', RegisterActivity);

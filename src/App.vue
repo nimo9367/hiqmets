@@ -32,7 +32,7 @@
             <a class="navbar-item">
               <router-link to="/">Topplista</router-link>
             </a>
-            <a class="navbar-item">
+            <a class="navbar-item" v-if="userData.user.id">
               <router-link :to="{ name: 'ActivityList', params: {userId: userData.user.id } }">Min aktivitet</router-link>
             </a>
             <a class="navbar-item">

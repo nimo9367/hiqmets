@@ -252,7 +252,6 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import Activities from '@/components/Activities.vue'; // @ is an alias to /src
 import RegisterActivity from '@/components/RegisterActivity.vue';
-import firebase from 'firebase';
 import { db, userData } from '../main';
 const _ = require('lodash');
 
@@ -305,6 +304,7 @@ export default class Home extends Vue {
   }
 
   get latestEntries() {
+    console.log("getting latest entries")
     const entries = userData.statsData.allEntries;
     entries.sort((a: any, b: any) => b.created - a.created);
     return entries.slice((this.current - 1) * 20, 20 + (this.current - 1) * 20);

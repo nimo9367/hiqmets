@@ -43,7 +43,6 @@
 </template>
 
  <script>
-    import firebase from 'firebase';
     import router from '../router';
     import { db, userData } from '../main';
 

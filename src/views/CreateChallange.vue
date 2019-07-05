@@ -4,7 +4,7 @@
       <div class="hero-body">
         <div class="container">
           <h1 class="title">
-            Skapa utmaning 
+            {{ externalCid ? "Ändra utmaning" : "Skapa utmaning" }}
           </h1>
           <h2 class="subtitle">
             Skapa en ny utmaning för dig och dina vänner
@@ -60,13 +60,13 @@
             <div class="columns">
                 <div class="column auto">
                 </div>
-                <div class="column is-one-fifth is-pulled-right">
-                    <div class="field">
+                <div class="column is-one-fifth">
+                    <span class="field is-pulled-right">
                         <b-switch v-model="challenge.isPublic">
                             {{ challenge.isPublic ? "Synlig för alla" : "Ej synlig" }}
                         </b-switch>
-                    </div>
-                    <a class="button is-primary" @click="createChallange">Skapa utmaning</a>
+                    </span>
+                    <a class="button is-primary is-pulled-right" @click="saveChallange">{{ externalCid ? "Ändra utmaning" : "Skapa utmaning" }}</a>
                 </div>
             </div>
         </section>
@@ -80,15 +80,16 @@ import { userData, db } from '../main';
 import Challenge from '../entities/Challenge';
 import Axios from 'axios';
 import { functionsBaseUrl } from '../globals';
+import Challenges from './Challenges.vue';
 
 @Component
 export default class CreateChallenge extends Vue {
-    challenge = new Challenge();
+    externalCid: string = '';
+    challenge: Challenge = new Challenge();
 
-    async createChallange() {
+    async saveChallange() {
         this.challenge.activities = this.selectedActivities;
         this.challenge.uid = userData.user.uid;
-        console.log(this.challenge);
         try {
             if(this.challenge.id) {
                 await db.collection('challenges')
@@ -107,7 +108,6 @@ export default class CreateChallenge extends Vue {
                 message: 'Utmaning kunde inte skapas', 
                 type: 'is-danger'
             });
-            console.log(e);
         }
     }
 
@@ -117,10 +117,19 @@ export default class CreateChallenge extends Vue {
         return this.availableActivities.filter(x => !x.deselected).map(x => x.id);
     }
 
-    public async beforeMount() {
-        const urls = await Axios.get(functionsBaseUrl + "getActivities");
-         const acts = urls.data.map(a => {
-            a.deselected = true;
+    private async getChallenge() {
+        const available = await userData.loadChallenges();
+        const c = available.find(x => x.id === this.externalCid);
+        this.challenge = c ? c : new Challenge();
+    }
+
+    private async getActivities() {
+        const urls = await Axios.get(functionsBaseUrl + "activities");
+        const acts = urls.data.map(a => {
+            if(this.challenge.activities)
+                a.deselected = !this.challenge.activities.some(aid => aid === a.id );
+            else
+                a.deselected = true;
             return a;
         });
         acts.sort((a, b) => {
@@ -130,6 +139,13 @@ export default class CreateChallenge extends Vue {
         });
 
         this.availableActivities = acts;
+    }
+
+    public async beforeMount() {
+        this.externalCid = this.$route.params.cid;
+        this.getChallenge().then(() => {
+            this.getActivities();
+        });
     }
 }
 </script>

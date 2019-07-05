@@ -7,16 +7,17 @@
             Tillgängliga utmaningar 
           </h1>
           <h2 class="subtitle">
-            En lista med kommande, pågående och avslutade utmaningar
+            En lista med kommande, pågående och avslutade utmaningar. Välj en i listan eller:
           </h2>
+            <a href="#/createchallenge" class="button is-primary">Skapa ny utmaning!</a>
         </div>
       </div>
     </div>
     <div class="container">
         <section class="section">
-            <div class="columns">
+            <div class="columns is-multiline">
                 <div v-for="c in challenges" v-bind:key="c.id" class="column is-one-third">
-                    <div class="card">
+                    <div class="card" v-bind:class="{'selected': c == challenge}">
                         <header class="card-header">
                             <p class="card-header-title">
                             {{c.name}}
@@ -28,6 +29,8 @@
                             <div class="content">
                                 {{c.description}}
                                 <br>
+                                <br>
+                                Skapad av: <b>{{ userData.getUserName(c.uid) }}</b>
                                 <br>
                                 Från: <b><time>{{ c.startdate | moment('LLL')  }}</time></b>
                                 <br>
@@ -48,15 +51,23 @@
                                         v-on:change="changeChallenge">
                                 <label v-bind:for="c.id"> Välj</label>
                             </a>
+                            <router-link class="card-footer-item" :to="{ name: 'CreateChallenge', params: { cid: c.id } }">
+                                Ändra
+                            </router-link>
                         </footer>
                     </div>
                 </div>
             </div>
-            <a href="#/createchallenge" class="button is-primary">Skapa ny</a>
         </section>
     </div>
   </div>  
 </template>
+
+<style scoped>
+.selected {
+    border-color: #2cc26b;
+}
+</style>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';

@@ -8,8 +8,8 @@
     ],
     "rewrites": [
       {
-        "source": "/api/getActivities", 
-        "function": "getActivities"
+        "source": "/api/**",
+        "function": "api"
       },
       {
         "source": "**",
