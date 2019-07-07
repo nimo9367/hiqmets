@@ -3,8 +3,6 @@ import { firestore } from "firebase-admin";
 const db = firestore();
 
 export const getFeed = functions.https.onRequest(async (req, res) => {
-    console.log(req.query);
-
     // Input data
     const skip = parseInt(req.query.skip);
     const take = parseInt(req.query.take);

@@ -252,6 +252,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import Activities from '@/components/Activities.vue'; // @ is an alias to /src
 import RegisterActivity from '@/components/RegisterActivity.vue';
+import moment from 'moment';
 import { db, userData } from '../main';
 const _ = require('lodash');
 
@@ -304,7 +305,6 @@ export default class Home extends Vue {
   }
 
   get latestEntries() {
-    console.log("getting latest entries")
     const entries = userData.statsData.allEntries;
     entries.sort((a: any, b: any) => b.created - a.created);
     return entries.slice((this.current - 1) * 20, 20 + (this.current - 1) * 20);
@@ -343,6 +343,42 @@ export default class Home extends Vue {
 
   public toggleAllLaps() {
     this.showAllLaps = !this.showAllLaps;
+  }
+
+  public async mounted() {
+    const invitecid = this.$route.query['i'] as string;
+    if(!invitecid)
+      return;
+
+    if(userData.user.challenges.find(x => x === invitecid))
+      return;
+      
+    const challenges = await userData.loadChallenges();
+    const challenge = challenges.find(x => x.id === invitecid);
+    if(!challenge)
+      return;
+
+    this.$dialog.confirm({
+      title: 'Du har fått en inbjudan!',
+      message: '<b>' + challenge.name + '</b><br> ' + challenge.description + '<br><br>' 
+      + 'Skapad av: <b>' + userData.getUserName(challenge.uid) + '</b><br>'  
+      + 'Från: <b>' +  moment(challenge.startdate).format('LLL') + '</b><br>' 
+      + 'Till: <b>' + moment(challenge.startdate).format('LLL') + '</b><br>'
+      + 'Status: <b>' + (challenge.status() == 'ended' ? 'Avslutad' : (challenge.status() == 'started' ? 'Påbörjad' : 'Avslutad')) + '</b><br>'  
+      + '<br>Vill du vara med?',
+      cancelText: 'Nej tack',
+      confirmText: 'Själkvklart!',
+      type: 'is-success',
+      onConfirm: () => {
+        userData.user.default_challenge = invitecid;
+        userData.user.challenges.push(invitecid);
+        userData.saveUser().then(() => {  
+          userData.loadUser(userData.user);
+          this.$toast.open('Du är nu med. Lyck till!');
+        })
+      }
+    });
+    this.$router.push('home')
   }
 
   // --------------

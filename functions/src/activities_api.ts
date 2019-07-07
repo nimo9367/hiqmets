@@ -36,16 +36,13 @@ export default class Activities {
             activity.id = doc.id;
             return activity;
         });
-        console.log("Found available acts for cid:" + cid);
         const snap = await db.collection('challenges').doc(cid).get();
         const challenge = snap.data();
         challenge.id = snap.id;
-        console.log("Found challenge acts");
         if(!challenge.activities)
             result = available;
         else
             result = available.filter(a => challenge.activities.some(aid => aid === a.id))
-        console.log("Activities done");
         return result;
     }
 }

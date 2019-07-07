@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import Activities from './activities_api';
 
-const DEBUGGING = true;
+const DEBUGGING = false;
 const db = admin.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);

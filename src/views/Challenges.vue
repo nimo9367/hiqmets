@@ -39,6 +39,12 @@
                                 Status: <b v-if="c.status() == 'ended'" class="has-text-danger">Avslutad</b> 
                                 <b v-if="c.status() == 'started'" class="has-text-warning">Påbörjad</b> 
                                 <b v-if="c.status() == 'notstarted'" class="has-text-success">Inte påbörjad</b> 
+                                <br>
+                                Inbjudan: https://outch.work?i={{ c.id }} &nbsp;
+                                
+                                <a href="#" @click="copy(c.id)">
+                                    <i class="fas fa-copy fa-lg"></i>
+                                </a>
                             </div>
                         </div>
                         <footer class="card-footer">
@@ -96,7 +102,19 @@ export default class Challenges extends Vue {
         };
     }
 
-    
+    public copy(cid: string) { 
+        const fullLink = document.createElement('input');
+        document.body.appendChild(fullLink);
+        fullLink.value = window.location.origin + '/#/?i=' + cid;
+        fullLink.select();
+        document.execCommand("copy", false);
+        fullLink.remove();
+        this.$toast.open({
+            message: 'Inbjudningslänk kopierad',
+            type: 'is-success'
+        });
+    }
+
     public isInChallenge(cid: string) {
         if(!userData.user.challenges)
             return;

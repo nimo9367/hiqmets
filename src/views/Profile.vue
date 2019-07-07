@@ -60,7 +60,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { userData, db } from '../main';
 import FileUploader from '@/components/FileUploader.vue';
-import moment from 'moment';
 const _ = require('lodash');
 
 Vue.component('FileUploader', FileUploader);

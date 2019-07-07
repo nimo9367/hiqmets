@@ -3,7 +3,6 @@ import { firestore } from "firebase-admin";
 const db = firestore();
 
 export const getUsers = functions.https.onRequest(async (req, res) => {
-    console.log(req.query);
 
     // Input data
     const cid = req.query.cid;

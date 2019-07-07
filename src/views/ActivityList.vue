@@ -173,7 +173,6 @@ export default class ActivityList extends Vue {
   private updateUserStats(act) {
       // Ugly hack because FB is slow to propagate 
       const stats = userData.statsData.userStats.find(x => x.uid == act.uid);
-      console.log(userData.statsData.userStats);
       if(stats) {
           stats.totalPoints -= act.points;
           stats.totalKcal -= Number(act.kcal);

@@ -19,7 +19,6 @@ app.get('/api/activities/', Activities.getActivities);
 app.get('/api/activities/:cid', Activities.getActivitiesForChallenge);
 app.get('/api/utils/recalculate/', async (req, res) => { 
     const result = await recalculate('zWSrTuLSbHdJSg3K8tnUZdELaV93');
-    console.log(result);
     res.status(200).send(result);
 });
 

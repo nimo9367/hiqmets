@@ -261,7 +261,6 @@ class UserData {
                     users.push(doc.data());
                 });
                 this.users = users;
-                console.log(users);
             });
     }
 
