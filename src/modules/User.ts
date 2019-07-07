@@ -9,6 +9,7 @@ class User {
     public favoriteActivity: string = '';
     public default_challenge: string = '';
     public avatar: string = '';
+    public challenges: string[] = [];
 }
 
 export default User;

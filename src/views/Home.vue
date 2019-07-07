@@ -383,7 +383,7 @@ export default class Home extends Vue {
     ]
   //  ------------
 
-  @Watch('filteredActivities')
+  // @Watch('filteredActivities')
   public filterPressed(value: any) {
     this.current = 1;
     userData.loadStats({activities: value.map((x: any) => x.id)});

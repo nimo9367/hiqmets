@@ -17,36 +17,35 @@ export default class Activities {
     }
 
     static getActivitiesForChallenge = async (req, res) => {
-        const cid = req.params.cid;
+        const cid: string = req.params.cid;
         if(!cid) {
             res.status(400).send("Challenge id (cid) is missing");
             return;
         }
+        const result = await Activities.getChallangeActivities(cid);
+        res.status(200).send(result);
+    }
+
+    static async getChallangeActivities(cid: string) {
         let result;
-        try {
-            const available = await db
-                .collection("activities")
-                .get()
-                .then(snap =>
-                    snap.docs.map(doc => {
-                        const activity = doc.data();
-                        activity.id = doc.id;
-                        return activity;
-                    })
-                );
-            const challenge = await db.collection('challenges').doc(cid).get().then(snap => {
-                const c = snap.data();
-                c.id = snap.id;
-                return c;
-            });
-            if(!challenge.activities)
-                result = available;
-            else
-                result = available.filter(a => challenge.activities.some(aid => aid === a.id))
-            res.status(200).send(result);
-        }
-        catch(e) {
-            console.log(e);
-        }
-}
+        const actSnap = await db
+            .collection("activities")
+            .get();
+        const available = actSnap.docs.map(doc => {
+            const activity = doc.data();
+            activity.id = doc.id;
+            return activity;
+        });
+        console.log("Found available acts for cid:" + cid);
+        const snap = await db.collection('challenges').doc(cid).get();
+        const challenge = snap.data();
+        challenge.id = snap.id;
+        console.log("Found challenge acts");
+        if(!challenge.activities)
+            result = available;
+        else
+            result = available.filter(a => challenge.activities.some(aid => aid === a.id))
+        console.log("Activities done");
+        return result;
+    }
 }

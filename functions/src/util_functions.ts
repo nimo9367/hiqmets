@@ -2,39 +2,51 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as moment from 'moment';
 import * as _ from 'lodash';
+import Activities from './activities_api';
 
+const DEBUGGING = true;
 const db = admin.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-export const changedEntry = functions.firestore.document('entries/{eid}').onWrite((change, context) => {
-    console.log("Entry change. Recreating stats...")
+export const changedEntry = functions.firestore.document('entries/{eid}').onWrite(async (change, context) => {
+    console.log("Entry change. Recreating stats...");
     const entry = change.after.exists ? change.after.data() : change.before.data();
-    console.log('Recreate uid: ' + entry.uid + ' cid:' + entry.cid);
-    return recalculate(entry.uid, entry.cid);
+    console.log('Recreate uid: ' + entry.uid);
+    return recalculate(entry.uid);
+});
+
+export const changedChallenge = functions.firestore.document('challenges/{cid}').onUpdate((change, context) => {
+    console.log("Challenge change. Recreating stats...")
+    console.log('Recreate challenge stats cid:' + context.params.cid);
+    return seedChallengeStats(context.params.cid);
+});
+
+export const userUpdate = functions.firestore.document('users/{uid}').onUpdate((change, context) => {
+    console.log("User change. Recreating stats...")
+    if(change.after.data().default_challenge !== change.before.data().default_challenge){
+        console.log('Recreate challenge stats cid:' + change.after.data().default_challenge );
+        console.log('Recreate uid: ' + change.after.data().uid);
+        if(change.after.data().default_challenge !== change.before.data().default_challenge) {
+            return recalculate(change.after.data().uid);
+        }
+    }
+    else
+        console.log('No need to update. No change in default_callenge');
+    return "No update";
 });
 
 export const seedStats = functions.https.onRequest((req, res) => {
     console.log("Recreating complete stats...")
     const cid = req.query.cid;
-    const usersRef = db.collection('users');
-    return usersRef.get().then(snap => {
-        const statsPromises = [];
-        snap.forEach(doc => {
-            const uid = doc.data().uid;
-            statsPromises.push(recalculate(uid, cid));
-        });
-        return Promise.all(statsPromises)
-            .catch(err => console.log(err))
-            .then(() => res.status(200).send('OK'));
-    });
+    return seedChallengeStats(cid).then(() => res.status(200).send('OK'));
 });
   
 export const generateLapStats = functions.https.onRequest((req, res) => {
     const cid = req.query.cid;
     const runForReal = req.query.runforreal;
     const week = parseInt(req.query.week);
-    console.log('Generating lap stats...');
+    log('Generating lap stats...');
     return db.collection('challenges').doc(cid).get().then(snap => {
         const challenge = snap.data();
         const startdate = moment(new Date(challenge.startdate.seconds * 1000)).add(7 * (week - 1), 'd').toDate();
@@ -172,41 +184,88 @@ export const generateLapStats = functions.https.onRequest((req, res) => {
     });
 });
 
-function recalculate(uid: string, cid: string, skipEmpty = false) {
-    return db.collection('challenges').doc(cid).get().then(snap => {
-        const challenge = snap.data();
-        const entriesRef = db.collection('entries');
-        return entriesRef.where('uid', '==', uid)
-            .where('cid', '==', cid)
-            .orderBy('created', 'desc')
-            .where('created', '>=',  challenge.startdate)
-            .where('created', '<=',  challenge.enddate)
-            .get().then((snapshot: any) => {
-                let totalKcal = 0;
-                let totalPoints = 0;
-                let totalMinutes = 0;
-                let totalNumber = 0;
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if(data.minutes)
-                        totalMinutes += parseInt(data.minutes);
-                    if(data.kcal)
-                        totalKcal += parseInt(data.kcal);
-                    if(data.minutes && data.mets) 
-                        totalPoints += parseInt((data.minutes * data.mets).toFixed())
-                    totalNumber++;
-                });
-                const stats = {
-                    uid: uid,
-                    cid: cid,
-                    totalPoints,
-                    totalKcal,
-                    totalMinutes,
-                    totalNumber
-                }
-                if(stats.totalPoints)
-                    return db.collection('user_stats').doc(uid + '_' + cid).set(stats);
-                return null;
+export async function recalculate(uid: string) {
+    try {
+        log('Getting user...');
+        const userReq = await db.collection('users').where('uid', '==', uid).get();
+        let challenges = [];
+        const recalcs = [];
+        let c = '';
+        userReq.forEach(doc => {
+            challenges = doc.data().challenges;
+            c = doc.data().default_challenge;
+            log(doc.data());
         });
+        log('Getting done');
+        for (c of challenges) {
+            log('Getting activities...');
+            const availableActivities = await Activities.getChallangeActivities(c);
+            log('Getting activities done. Reacreating: ' + c);
+            recalcs.push(await recalculateSingle(uid, c, availableActivities));
+        }
+        return recalcs;
+    }
+    catch(e) {
+        console.log(e);
+        return "Error";
+    }
+}
+
+async function recalculateSingle(uid: string, cid: string, availableActivities: any[]) {
+    log("Getting Entries for cid: " +  cid)
+    const snap = await db.collection('challenges').doc(cid).get();
+    log("Found challengr for cid: " +  cid);
+    const challenge = snap.data();
+    const snapshot = await  db.collection('entries').where('uid', '==', uid)
+        .orderBy('created', 'desc')
+        .where('created', '>=',  challenge.startdate)
+        .where('created', '<=',  challenge.enddate)
+        .get();
+    let totalKcal = 0;
+    let totalPoints = 0;
+    let totalMinutes = 0;
+    let totalNumber = 0;
+    log("Found Entries for cid: " +  cid)
+    snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if(!availableActivities || !availableActivities.length || availableActivities.some(x => x.id === data.aid)) {
+            if(data.minutes)
+                totalMinutes += parseInt(data.minutes);
+            if(data.kcal)
+                totalKcal += parseInt(data.kcal);
+            if(data.minutes && data.mets) 
+                totalPoints += parseInt((data.minutes * data.mets).toFixed())
+            totalNumber++;
+        }
     });
+    const stats = {
+        uid: uid,
+        cid: cid,
+        totalPoints,
+        totalKcal,
+        totalMinutes,
+        totalNumber
+    }
+    log("Stats done for cid: " + cid);
+    if(stats.totalPoints)
+        await db.collection('user_stats').doc(uid + '_' + cid).set(stats);
+    return stats;
+}
+
+function seedChallengeStats(cid: string) {
+    const usersRef = db.collection('users');
+    return usersRef.get().then(snap => {
+        const statsPromises = [];
+        snap.forEach(doc => {
+            const uid = doc.data().uid;
+            statsPromises.push(recalculate(uid));  
+        });
+        return Promise.all(statsPromises)
+            .catch(err => console.log(err));
+    });
+}
+
+function log(obj: any) {
+    if(DEBUGGING)
+        console.log(obj)
 }

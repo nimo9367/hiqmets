@@ -17,7 +17,7 @@
         <section class="section">
             <div class="columns is-multiline">
                 <div v-for="c in challenges" v-bind:key="c.id" class="column is-one-third">
-                    <div class="card" v-bind:class="{'selected': c == challenge}">
+                    <div class="card" v-bind:class="{'selected': c.id == userData.user.default_challenge}">
                         <header class="card-header">
                             <p class="card-header-title">
                             {{c.name}}
@@ -42,16 +42,29 @@
                             </div>
                         </div>
                         <footer class="card-footer">
-                            <a href="#" class="card-footer-item">
-                                <input type="radio"
-                                        v-bind:id="c.id"
-                                        name="challengeSelect"
-                                        v-bind:value="c"
-                                        v-model="challenge"
-                                        v-on:change="changeChallenge">
-                                <label v-bind:for="c.id"> Välj</label>
+                            <a href="#" @click="changeChallenge(c.id)" class="card-footer-item">
+                                <span lass="icon">
+                                    <i class="fas fa-eye fa-lg"></i>
+                                </span>
+                                &nbsp;
+                                Välj
                             </a>
-                            <router-link class="card-footer-item" :to="{ name: 'CreateChallenge', params: { cid: c.id } }">
+                            <a hreaf="#" class="card-footer-item" @click="joinChallenge(c.id)">
+                                <span v-if="isInChallenge(c.id)" class="icon">
+                                    <i class="fas fa-check fa-lg"></i>
+                                </span>
+                                
+                                <span v-if="!isInChallenge(c.id)" class="icon">
+                                    <i class="fas fa-sign-in-alt fa-lg"></i>
+                                </span>
+                                &nbsp;
+                                {{ isInChallenge(c.id) ? 'Deltar' : 'Delta' }} 
+                            </a>
+                            <router-link class="card-footer-item" v-if="c.uid === userData.user.uid" :to="{ name: 'CreateChallenge', params: { cid: c.id } }">
+                                <span lass="icon">
+                                    <i class="fas fa-pencil-alt fa-lg"></i>
+                                </span>
+                                &nbsp;
                                 Ändra
                             </router-link>
                         </footer>
@@ -79,21 +92,34 @@ export default class Challenges extends Vue {
     public data() {
         return {
             challenges: [],
-            challenge: null,
             userData
         };
     }
 
-    public changeChallenge() {
-        userData.user.default_challenge = this.$data.challenge.id;
+    
+    public isInChallenge(cid: string) {
+        if(!userData.user.challenges)
+            return;
+        return userData.user.challenges.find(x => x === cid);
+    }
+
+    public joinChallenge(cid: string) {
+        if(!userData.user.challenges)
+            userData.user.challenges = [];
+        if(userData.user.challenges.find(x => x === cid))
+            userData.user.challenges = userData.user.challenges.filter(x => x !== cid) ;
+        else
+            userData.user.challenges.push(cid);
+        userData.saveUser().then(() => userData.loadUser(userData.user)); 
+    }
+
+    public changeChallenge(cid: string) {
+        userData.user.default_challenge = cid;
         userData.saveUser().then(() => userData.loadUser(userData.user));
     }
 
     public beforeMount() {
-        userData.loadChallenges().then((c: Challenge[]) => {
-            this.$data.challenges = c;
-            this.$data.challenge = c.find((cc: Challenge) => cc.id === userData.user.default_challenge);
-        });
+        userData.loadChallenges().then((c: Challenge[]) => this.$data.challenges = c);
     }
 }
 </script>

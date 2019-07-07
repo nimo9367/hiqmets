@@ -4,6 +4,7 @@ import Challenge from '../entities/Challenge';
 import { event } from 'vue-analytics';
 import Axios from 'axios';
 import { functionsBaseUrl } from '../globals';
+import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
 const _ = require('lodash');
 
 class UserData {
@@ -128,7 +129,9 @@ class UserData {
                     this.challenge.startdate = new Date(data.startdate.seconds*1000);
                     this.challenge.enddate = new Date(data.enddate.seconds*1000);
                     this.challenge.countDown();
-                    this.loadUsers(this.user.default_challenge).then(() => {
+                    this.loadUsers(this.user.default_challenge).then(async () => {
+                        const actReq = await Axios.get(functionsBaseUrl + "activities/" + this.user.default_challenge);
+                        this.activities = actReq.data;
                         this.loadLatestEntries();
                         this.loadStats();
                         this.loadWeeklyStats();
@@ -162,7 +165,6 @@ class UserData {
             }
             return db.collection('entries')
             .where('uid', '==', u.uid)
-            .where('cid', '==', cid)
             .orderBy("created", "desc")
             .where('created', '>=', self.challenge.startdate)
             .where('created', '<=', self.challenge.enddate)
@@ -179,6 +181,7 @@ class UserData {
                         const newEntry = {
                             id: e.id,
                             eid: e.id,
+                            uid:  u.uid,
                             created: entry.created ? entry.created.seconds : '',
                             activity: act.text,
                             minutes: entry.minutes,
@@ -213,10 +216,7 @@ class UserData {
 
     public async loadLatestEntries(options:any = {}) {
         const cid = this.user.default_challenge;
-        console.log(cid);
-        const activities = await Axios.get(functionsBaseUrl + "activities/" + cid);
         return db.collection('entries')
-            .where('cid', '==', cid)
             .orderBy("created", "desc")
             .where('created', '>=', this.challenge.startdate)
             .where('created', '<=', this.challenge.enddate)
@@ -227,12 +227,13 @@ class UserData {
                     const entry = e.data();
                     if(options && options.activities && options.activities.length && !options.activities.some((x: any) => x == entry.aid))
                         return;
-                    const act = activities.data.find((x: any) => x.id == entry.aid);
+                    const act = this.activities.find((x: any) => x.id == entry.aid);
                     if(act) {
                         const user = this.getUser(entry.uid);
                         if(user) {
                             allEntries.push({
                                 eid: e.id,
+                                uid: this.user.uid,
                                 minutes: entry.minutes,
                                 name: user.name,
                                 activity: act.text,
@@ -247,20 +248,20 @@ class UserData {
                     }
                 });
                 this.statsData.allEntries = allEntries;
-                console.log(this.statsData.allEntries);
                 this.isLoading = false;
             });
     }
     
     public loadUsers(cid: string) {
         return db.collection('users')
-            .where('default_challenge', '==', cid)
+            .where('challenges', 'array-contains', cid)
             .get().then(data => { 
                 const users = <any>[];
                 data.forEach((doc: any) => {
                     users.push(doc.data());
                 });
                 this.users = users;
+                console.log(users);
             });
     }
 
@@ -274,17 +275,20 @@ class UserData {
                 snap.forEach((s:any) => {
                     const stats = s.data();
                     const user = this.getUser(stats.uid);
-                    allStats = allStats.filter((old) => old.uid != user.uid);
-                    const statsObj = {
-                        id: user.id,
-                        uid: user.uid,
-                        name: user.name,
-                        totalTime: stats.totalMinutes,
-                        totalPoints: stats.totalPoints,
-                        totalKcal: stats.totalKcal,
-                        avatar: user.avatar,
-                    };
-                    allStats.push(statsObj);
+                    if(user && stats.cid === cid) {
+                        allStats = allStats.filter((old) => old.uid != user.uid);
+                        const statsObj = {
+                            id: user.id,
+                            uid: user.uid,
+                            name: user.name,
+                            totalTime: stats.totalMinutes,
+                            totalPoints: stats.totalPoints,
+                            totalKcal: stats.totalKcal,
+                            avatar: user.avatar,
+                            cid: stats.cid
+                        };
+                        allStats.push(statsObj);
+                    }
                 });
                 allStats.sort((a, b) => b.totalPoints - a.totalPoints );
                 if(allStats.length > 1) {

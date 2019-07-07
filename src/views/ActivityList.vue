@@ -65,7 +65,7 @@
                     <div class="column is-one-sixth has-text-centered"><span class="title is-5">{{ entry.minutes }}</span></div>
                     <div class="column is-one-sixth"><span class="title is-5">{{ entry.kcal }}</span></div>
                     <div class="column is-one-sixth"><span class="title is-5 has-text-success">{{ entry.points }}</span></div>
-                    <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry.id)" class="delete is-medium "></a></div>
+                    <div v-if="isLoggedInUser" class="column is-one-sixth"><a @click="confirmRemove(entry)" class="delete is-medium "></a></div>
                     <div v-else class="column is-one-sixth"></div>
                 </div>
                 <div class="columns">
@@ -149,23 +149,37 @@ export default class ActivityList extends Vue {
     return userData.entriesData.entries.slice(this.current * 10, this.current * 10 + 10);
   }
 
-  public confirmRemove(id: any) {
+  public confirmRemove(entry: any) {
       this.$dialog.confirm({
           title: 'Ta bort aktivitet',
           message: 'Är du säker på att du vill <b>ta bort</b> aktivitet? Kan inte ångras.',
           confirmText: 'Ta bort',
           type: 'is-danger',
           hasIcon: true,
-          onConfirm: () => this.remove(id)
+          onConfirm: () => this.remove(entry)
       });
   }
-  public remove(id: any) {
+
+  public remove(entry: any) {
     const that = this;
-    db.collection('entries').doc(id).delete().then(() => {
+    db.collection('entries').doc(entry.id).delete().then(() => {
+      this.updateUserStats(entry);
       that.$toast.open('Aktivitet borttagen!');
     }).catch((error) => {
       that.$toast.open('Error removing document: ' + error);
     });
+  }
+
+  private updateUserStats(act) {
+      // Ugly hack because FB is slow to propagate 
+      const stats = userData.statsData.userStats.find(x => x.uid == act.uid);
+      console.log(userData.statsData.userStats);
+      if(stats) {
+          stats.totalPoints -= act.points;
+          stats.totalKcal -= Number(act.kcal);
+          stats.totalMinutes -= Number(act.minutes);
+          stats.totalNumber -= 1;
+      }
   }
 
   public comment(entry: any) {

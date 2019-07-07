@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { firestore } from "firebase-admin";
 const db = firestore();
 
-export const getChallanges =  functions.https.onRequest(async (req, res) => {
+export const getChallenges =  functions.https.onRequest(async (req, res) => {
    const  result = await db.collection('challenges').get().then(snap => snap.docs.map(doc => { 
       const challange = doc.data();
       challange.id = doc.id;

@@ -139,10 +139,11 @@ export default class RegisterActivity extends Vue {
         userData.user.favoriteActivity = userData.selectedActivity.id;
         userData.saveUser();
     }
+
     saveActivity(activityId: string, minutes: string|null, mets: number, activityText: string, importId: string, datetime: Date) {
         const ref = db.collection('entries').doc();
         const mins = minutes == null ? 0 : minutes;
-        var setWithMerge = ref.set({
+        const act = {
             mets: mets,
             minutes: minutes,
             kcal: (mets * (userData.user.weight ? userData.user.weight : 75) * (<number>mins  / 60)).toFixed(0),
@@ -151,7 +152,9 @@ export default class RegisterActivity extends Vue {
             uid: userData.user.uid,
             created: datetime,
             import_id: importId,
-        }, { merge: true }).then(() => {
+        };
+        this.updateUserStats(act);
+        var setWithMerge = ref.set(act, { merge: true }).then(() => {
             this.$toast.open({
                 message: minutes + ' minuter ' + activityText + ' tillagt',
                 position: 'is-top',
@@ -159,6 +162,18 @@ export default class RegisterActivity extends Vue {
             });
         }).catch(e => console.log(e));
     }
+
+    updateUserStats(act) {
+        // Ugly hack because FB is slow to propagate 
+        const stats = this.userData.statsData.userStats.find(x => x.cid == act.cid && x.uid == act.uid);
+        if(stats) {
+            stats.totalPoints += Number(act.minutes) * act.mets;
+            stats.totalKcal += Number(act.kcal);
+            stats.totalMinutes += Number(act.minutes);
+            stats.totalNumber += 1;
+        }
+    }
+
     mounted() {
         const stravaCode = this.$route.query.code;
         if(!stravaCode)
@@ -172,7 +187,6 @@ export default class RegisterActivity extends Vue {
                 position: 'is-top'
             });
             userData.loadChallenges().then(() => {
-                
                 userData.loadEntries(this.$route.params.userId);
                 this.$router.push({ name: 'ActivityList', params: { userId: this.$route.params.userId } })
                 setTimeout(() => {

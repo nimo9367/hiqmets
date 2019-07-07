@@ -12,7 +12,7 @@ export const getUsers = functions.https.onRequest(async (req, res) => {
     const result = await db
         .collection("users")
         .orderBy("totalPoints", "desc")
-        .where("challanges", "array-contains", cid)
+        .where("challenges", "array-contains", cid)
         .get()
         .then(snap => snap.docs.map(doc => doc.data()));
     res.status(200).send(result);

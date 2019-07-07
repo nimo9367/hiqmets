@@ -45,6 +45,8 @@
  <script>
     import router from '../router';
     import { db, userData } from '../main';
+    import { firebase } from '@firebase/app';
+    import '@firebase/auth';
 
     export default {
         name: 'signUp',
